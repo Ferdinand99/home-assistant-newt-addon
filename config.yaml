@@ -1,0 +1,21 @@
+name: "Newt Add-on"
+version: "1.0.0"
+slug: "newt"
+description: "Kjører Newt-containeren i Home Assistant"
+arch:
+  - amd64
+  - armv7
+  - armhf
+  - aarch64
+startup: "system"
+boot: "auto"
+host_network: true
+privileged: true
+options:
+  PANGOLIN_ENDPOINT: "https://example.com"
+  NEWT_ID: "your_newt_id"
+  NEWT_SECRET: "your_newt_secret"
+schema:
+  PANGOLIN_ENDPOINT: "str"
+  NEWT_ID: "str"
+  NEWT_SECRET: "str"
