@@ -2,7 +2,7 @@
 name: "✨ Feature Request"
 about: Suggest an idea to improve the Newt Home Assistant add-on.
 title: ''
-labels: ''
+labels: Feature Request
 assignees: Ferdinand99
 
 ---
