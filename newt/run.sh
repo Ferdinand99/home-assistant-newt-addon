@@ -6,9 +6,9 @@ set -e  # Stop script on errors
 echo "🔹 Starting Newt container using Home Assistant Supervisor API..."
 
 # Load config from Home Assistant options
-PANGOLIN_ENDPOINT=${PANGOLIN_ENDPOINT:-"https://dash.opland.net"}
-NEWT_ID=${NEWT_ID:-"ru32vsg8ls5lx93"}
-NEWT_SECRET=${NEWT_SECRET:-"5rbqgpc292989uk9kz52hmypoyz6u9jf7k670fqja8p4un8o"}
+PANGOLIN_ENDPOINT=${PANGOLIN_ENDPOINT:-"https://eample.com"}
+NEWT_ID=${NEWT_ID:-"123456789"}
+NEWT_SECRET=${NEWT_SECRET:-"waytolongsecret"}
 
 
 if [[ -z "$PANGOLIN_ENDPOINT" || -z "$NEWT_ID" || -z "$NEWT_SECRET" ]]; then
@@ -21,13 +21,21 @@ echo "  PANGOLIN_ENDPOINT=$PANGOLIN_ENDPOINT"
 echo "  NEWT_ID=$NEWT_ID"
 echo "  NEWT_SECRET=$NEWT_SECRET"
 
-# Run Newt container
-docker run -d --restart unless-stopped \
-    --name newt \
-    -e PANGOLIN_ENDPOINT="$PANGOLIN_ENDPOINT" \
-    -e NEWT_ID="$NEWT_ID" \
-    -e NEWT_SECRET="$NEWT_SECRET" \
-    fosrl/newt
+# Use Home Assistant Supervisor API to run the Newt container
+echo "🔹 Creating and starting Newt container via Supervisor API..."
+curl --silent --fail --header "Authorization: Bearer ${SUPERVISOR_TOKEN}" \
+    -X POST "http://supervisor/docker/containers/run" \
+    -H "Content-Type: application/json" \
+    -d '{
+        "name": "newt",
+        "image": "fosrl/newt",
+        "restart_policy": "unless-stopped",
+        "env": [
+            "PANGOLIN_ENDPOINT='"$PANGOLIN_ENDPOINT"'",
+            "NEWT_ID='"$NEWT_ID"'",
+            "NEWT_SECRET='"$NEWT_SECRET"'"
+        ]
+    }' || { echo "❌ ERROR: Failed to start Newt container via Supervisor API"; exit 22; }
 
 echo "✅ Newt container started successfully!"
 exec tail -f /dev/null
