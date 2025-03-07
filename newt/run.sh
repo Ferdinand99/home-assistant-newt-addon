@@ -3,15 +3,14 @@ set -e  # Stop script on errors
 
 echo "🔹 Starting Newt container using Home Assistant Supervisor API..."
 
-# Check if Supervisor API is available
+# Ensure the Supervisor API is accessible
 if ! curl --silent --fail --header "Authorization: Bearer ${SUPERVISOR_TOKEN}" "http://supervisor/info"; then
     echo "❌ ERROR: Home Assistant Supervisor API is not accessible!"
     exit 22
 fi
-
 echo "✅ Supervisor API is available!"
 
-# Set environment variables
+# Retrieve and display add-on environment variables
 PANGOLIN_ENDPOINT=${PANGOLIN_ENDPOINT:-"https://example.com"}
 NEWT_ID=${NEWT_ID:-"default_id"}
 NEWT_SECRET=${NEWT_SECRET:-"default_secret"}
@@ -21,30 +20,23 @@ echo "  PANGOLIN_ENDPOINT=$PANGOLIN_ENDPOINT"
 echo "  NEWT_ID=$NEWT_ID"
 echo "  NEWT_SECRET=$NEWT_SECRET"
 
-# Stop and remove any existing Newt container
-echo "🔹 Stopping and removing any existing Newt container..."
+# Send the environment variables to Home Assistant
+echo "🔹 Setting environment variables for the add-on..."
 curl --silent --fail --header "Authorization: Bearer ${SUPERVISOR_TOKEN}" \
-    -X POST "http://supervisor/docker/containers/newt/stop" || echo "❗ Warning: Could not stop container"
-curl --silent --fail --header "Authorization: Bearer ${SUPERVISOR_TOKEN}" \
-    -X POST "http://supervisor/docker/containers/newt/remove" || echo "❗ Warning: Could not remove container"
-
-# Create and start a new Newt container using the Supervisor API
-echo "🔹 Creating and starting new Newt container via Supervisor API..."
-curl --silent --fail --header "Authorization: Bearer ${SUPERVISOR_TOKEN}" \
-    -X POST "http://supervisor/docker/containers/run" \
+    -X POST "http://supervisor/addons/self/options" \
     -H "Content-Type: application/json" \
     -d '{
-        "name": "newt",
-        "image": "fosrl/newt",
-        "restart_policy": "unless-stopped",
-        "env": [
-            "PANGOLIN_ENDPOINT='"$PANGOLIN_ENDPOINT"'",
-            "NEWT_ID='"$NEWT_ID"'",
-            "NEWT_SECRET='"$NEWT_SECRET"'"
-        ]
-    }' || { echo "❌ ERROR: Failed to start Newt container via Supervisor API"; exit 22; }
+        "options": {
+            "PANGOLIN_ENDPOINT": "'"$PANGOLIN_ENDPOINT"'",
+            "NEWT_ID": "'"$NEWT_ID"'",
+            "NEWT_SECRET": "'"$NEWT_SECRET"'"
+        }
+    }' || { echo "❌ ERROR: Failed to set environment variables"; exit 22; }
 
-echo "✅ Newt container started successfully!"
+# Start the add-on
+echo "🔹 Starting the add-on..."
+curl --silent --fail --header "Authorization: Bearer ${SUPERVISOR_TOKEN}" \
+    -X POST "http://supervisor/addons/self/start" || { echo "❌ ERROR: Failed to start add-on"; exit 22; }
 
-# Keep add-on running
-exec tail -f /dev/null
+echo "✅ Newt add-on started successfully!"
+exec tail -f /dev/null  # Keep the add-on running
