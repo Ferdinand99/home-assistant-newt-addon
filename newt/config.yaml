@@ -10,7 +10,9 @@ arch:
 startup: system
 boot: auto
 host_network: true
-privileged: true
+privileged: 
+  - SYS_ADMIN
+  - NET_ADMIN
 options:
   PANGOLIN_ENDPOINT: "https://example.com"
   NEWT_ID: "your_newt_id"
