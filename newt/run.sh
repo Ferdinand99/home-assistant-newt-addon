@@ -3,40 +3,28 @@ set -e  # Stop script on errors
 
 echo "🔹 Starting Newt container using Home Assistant Supervisor API..."
 
-# Ensure the Supervisor API is accessible
-if ! curl --silent --fail --header "Authorization: Bearer ${SUPERVISOR_TOKEN}" "http://supervisor/info"; then
-    echo "❌ ERROR: Home Assistant Supervisor API is not accessible!"
-    exit 22
+# Load config from Home Assistant options
+PANGOLIN_ENDPOINT=$(bashio::config 'PANGOLIN_ENDPOINT')
+NEWT_ID=$(bashio::config 'NEWT_ID')
+NEWT_SECRET=$(bashio::config 'NEWT_SECRET')
+
+if [[ -z "$PANGOLIN_ENDPOINT" || -z "$NEWT_ID" || -z "$NEWT_SECRET" ]]; then
+    echo "❌ ERROR: Missing configuration values!"
+    exit 1
 fi
-echo "✅ Supervisor API is available!"
 
-# Retrieve and display add-on environment variables
-PANGOLIN_ENDPOINT=${PANGOLIN_ENDPOINT:-"https://example.com"}
-NEWT_ID=${NEWT_ID:-"default_id"}
-NEWT_SECRET=${NEWT_SECRET:-"default_secret"}
-
-echo "🔹 Environment Variables:"
+echo "✅ Configuration Loaded:"
 echo "  PANGOLIN_ENDPOINT=$PANGOLIN_ENDPOINT"
 echo "  NEWT_ID=$NEWT_ID"
 echo "  NEWT_SECRET=$NEWT_SECRET"
 
-# Send the environment variables to Home Assistant
-echo "🔹 Setting environment variables for the add-on..."
-curl --silent --fail --header "Authorization: Bearer ${SUPERVISOR_TOKEN}" \
-    -X POST "http://supervisor/addons/self/options" \
-    -H "Content-Type: application/json" \
-    -d '{
-        "options": {
-            "PANGOLIN_ENDPOINT": "'"$PANGOLIN_ENDPOINT"'",
-            "NEWT_ID": "'"$NEWT_ID"'",
-            "NEWT_SECRET": "'"$NEWT_SECRET"'"
-        }
-    }' || { echo "❌ ERROR: Failed to set environment variables"; exit 22; }
+# Run Newt container
+docker run -d --restart unless-stopped \
+    --name newt \
+    -e PANGOLIN_ENDPOINT="$PANGOLIN_ENDPOINT" \
+    -e NEWT_ID="$NEWT_ID" \
+    -e NEWT_SECRET="$NEWT_SECRET" \
+    fosrl/newt
 
-# Start the add-on
-echo "🔹 Starting the add-on..."
-curl --silent --fail --header "Authorization: Bearer ${SUPERVISOR_TOKEN}" \
-    -X POST "http://supervisor/addons/self/start" || { echo "❌ ERROR: Failed to start add-on"; exit 22; }
-
-echo "✅ Newt add-on started successfully!"
-exec tail -f /dev/null  # Keep the add-on running
+echo "✅ Newt container started successfully!"
+exec tail -f /dev/null
