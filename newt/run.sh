@@ -3,10 +3,16 @@ set -e  # Stop the script on errors
 
 echo "🔹 Starting Newt inside Home Assistant OS..."
 
-# Load configuration values
-PANGOLIN_ENDPOINT=${PANGOLIN_ENDPOINT:-"https://dash.opland.net"}
-NEWT_ID=${NEWT_ID:-"ru32vsg8ls5lx93"}
-NEWT_SECRET=${NEWT_SECRET:-"5rbqgpc292989uk9kz52hmypoyz6u9jf7k670fqja8p4un8o"}
+# Load configuration from environment variables set by Home Assistant
+PANGOLIN_ENDPOINT=${PANGOLIN_ENDPOINT}
+NEWT_ID=${NEWT_ID}
+NEWT_SECRET=${NEWT_SECRET}
+
+# Validate if configuration values are provided
+if [[ -z "$PANGOLIN_ENDPOINT" || -z "$NEWT_ID" || -z "$NEWT_SECRET" ]]; then
+    echo "❌ ERROR: Missing required configuration values!"
+    exit 1
+fi
 
 echo "✅ Configuration Loaded:"
 echo "  PANGOLIN_ENDPOINT=$PANGOLIN_ENDPOINT"
