@@ -1,5 +1,5 @@
 name: "Newt Add-on"
-version: "1.1.6"
+version: "1.1.7"
 slug: "newt"
 description: "Runs the Newt container inside Home Assistant using Supervisor API"
 arch:
