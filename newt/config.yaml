@@ -1,7 +1,7 @@
 name: "Newt Add-on"
-version: "1.1.7"
+version: "1.1.8"
 slug: "newt"
-description: "Runs the Newt container inside Home Assistant using Supervisor API"
+description: "Runs Newt inside Home Assistant OS"
 arch:
   - amd64
   - armv7
@@ -15,9 +15,9 @@ privileged:
   - NET_ADMIN
   - DAC_READ_SEARCH
 options:
-  PANGOLIN_ENDPOINT: "https://example.com"
-  NEWT_ID: ""
-  NEWT_SECRET: ""
+  PANGOLIN_ENDPOINT: "https://dash.opland.net"
+  NEWT_ID: "your_newt_id"
+  NEWT_SECRET: "your_newt_secret"
 schema:
   PANGOLIN_ENDPOINT: "str"
   NEWT_ID: "str"
