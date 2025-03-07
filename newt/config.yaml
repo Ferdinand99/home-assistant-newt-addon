@@ -1,5 +1,5 @@
 name: "Newt Add-on"
-version: "1.0.2"
+version: "1.0.3"
 slug: "newt"
 description: "Runs the Newt container inside Home Assistant"
 arch:
@@ -21,3 +21,7 @@ schema:
   PANGOLIN_ENDPOINT: "str?"
   NEWT_ID: "str?"
   NEWT_SECRET: "str?"
+environment:
+  PANGOLIN_ENDPOINT: "$PANGOLIN_ENDPOINT"
+  NEWT_ID: "$NEWT_ID"
+  NEWT_SECRET: "$NEWT_SECRET"
