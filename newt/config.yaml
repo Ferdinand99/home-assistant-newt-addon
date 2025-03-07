@@ -1,5 +1,5 @@
 name: "Newt Add-on"
-version: "1.2.2"
+version: "1.2.3"
 slug: "newt"
 description: "Runs Newt inside Home Assistant OS"
 arch:
@@ -15,17 +15,16 @@ privileged:
   - NET_ADMIN
   - DAC_READ_SEARCH
 options:
-  PANGOLIN_ENDPOINT: "https://yourendpoint.com"
+  PANGOLIN_ENDPOINT: "https://example.com"
   NEWT_ID: "your_newt_id"
   NEWT_SECRET: "your_newt_secret"
 schema:
   PANGOLIN_ENDPOINT: "str"
   NEWT_ID: "str"
   NEWT_SECRET: "str"
-environment:
-  PANGOLIN_ENDPOINT: "{options[PANGOLIN_ENDPOINT]}"
-  NEWT_ID: "{options[NEWT_ID]}"
-  NEWT_SECRET: "{options[NEWT_SECRET]}"
+# Ensure that environment variables are set correctly
+map:
+  - config:rw
 hassio_api: true
 homeassistant_api: true
 auth_api: true
