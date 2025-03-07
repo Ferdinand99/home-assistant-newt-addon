@@ -1,17 +1,22 @@
 #!/usr/bin/env bash
-set -e  # Stop the script on errors
+set -e  # Stop script on errors
 
 echo "🔹 Starting Newt container using Home Assistant Supervisor API..."
-echo "🔹 Checking Docker availability..."
 
-if ! docker info >/dev/null 2>&1; then
-    echo "❌ ERROR: Docker is NOT available inside Home Assistant OS!"
+# Check if Supervisor API is available
+if ! curl --silent --fail --header "Authorization: Bearer ${SUPERVISOR_TOKEN}" "http://supervisor/info"; then
+    echo "❌ ERROR: Home Assistant Supervisor API is not accessible!"
     exit 22
 fi
 
-echo "✅ Docker is available!"
+echo "✅ Supervisor API is available!"
 
-echo "🔹 Checking environment variables..."
+# Set environment variables
+PANGOLIN_ENDPOINT=${PANGOLIN_ENDPOINT:-"https://example.com"}
+NEWT_ID=${NEWT_ID:-"default_id"}
+NEWT_SECRET=${NEWT_SECRET:-"default_secret"}
+
+echo "🔹 Environment Variables:"
 echo "  PANGOLIN_ENDPOINT=$PANGOLIN_ENDPOINT"
 echo "  NEWT_ID=$NEWT_ID"
 echo "  NEWT_SECRET=$NEWT_SECRET"
@@ -23,23 +28,23 @@ curl --silent --fail --header "Authorization: Bearer ${SUPERVISOR_TOKEN}" \
 curl --silent --fail --header "Authorization: Bearer ${SUPERVISOR_TOKEN}" \
     -X POST "http://supervisor/docker/containers/newt/remove" || echo "❗ Warning: Could not remove container"
 
-# Start a new Newt container
-echo "🔹 Starting new Newt container..."
+# Create and start a new Newt container using the Supervisor API
+echo "🔹 Creating and starting new Newt container via Supervisor API..."
 curl --silent --fail --header "Authorization: Bearer ${SUPERVISOR_TOKEN}" \
-    -X POST "http://supervisor/docker/containers/create" \
+    -X POST "http://supervisor/docker/containers/run" \
     -H "Content-Type: application/json" \
     -d '{
-        "Image": "fosrl/newt",
-        "HostConfig": {
-            "RestartPolicy": {"Name": "unless-stopped"},
-            "Env": [
-                "PANGOLIN_ENDPOINT='"$PANGOLIN_ENDPOINT"'",
-                "NEWT_ID='"$NEWT_ID"'",
-                "NEWT_SECRET='"$NEWT_SECRET"'"
-            ]
-        },
-        "Name": "newt"
-    }' || { echo "❌ ERROR: Failed to create Newt container"; exit 22; }
+        "name": "newt",
+        "image": "fosrl/newt",
+        "restart_policy": "unless-stopped",
+        "env": [
+            "PANGOLIN_ENDPOINT='"$PANGOLIN_ENDPOINT"'",
+            "NEWT_ID='"$NEWT_ID"'",
+            "NEWT_SECRET='"$NEWT_SECRET"'"
+        ]
+    }' || { echo "❌ ERROR: Failed to start Newt container via Supervisor API"; exit 22; }
 
-echo "✅ Newt container should now be running!"
-exec tail -f /dev/null  # Keep container running
+echo "✅ Newt container started successfully!"
+
+# Keep add-on running
+exec tail -f /dev/null
