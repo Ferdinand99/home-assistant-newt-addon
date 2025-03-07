@@ -1,7 +1,7 @@
 name: "Newt Add-on"
 version: "1.0.0"
 slug: "newt"
-description: "Kjører Newt-containeren i Home Assistant"
+description: "Runs the Newt container inside Home Assistant"
 arch:
   - amd64
   - armv7
