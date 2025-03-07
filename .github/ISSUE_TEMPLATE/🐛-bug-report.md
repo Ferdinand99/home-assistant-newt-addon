@@ -3,7 +3,7 @@ name: "\U0001F41B Bug Report"
 about: Thanks for reporting an issue! Please fill out the information below so we
   can help you faster.
 title: ''
-labels: bug, Needs Investigation
+labels: bug
 assignees: Ferdinand99
 
 ---
