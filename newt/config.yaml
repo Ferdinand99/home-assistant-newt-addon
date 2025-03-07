@@ -1,5 +1,5 @@
 name: "Newt Add-on"
-version: "1.0.3"
+version: "1.0.4"
 slug: "newt"
 description: "Runs the Newt container inside Home Assistant"
 arch:
@@ -11,8 +11,9 @@ startup: system
 boot: auto
 host_network: true
 privileged:
-  - NET_ADMIN
   - SYS_ADMIN
+  - NET_ADMIN
+  - DAC_READ_SEARCH
 options:
   PANGOLIN_ENDPOINT: "https://example.com"
   NEWT_ID: "your_newt_id"

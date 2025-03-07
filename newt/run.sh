@@ -8,7 +8,7 @@ PANGOLIN_ENDPOINT=${PANGOLIN_ENDPOINT:-"https://example.com"}
 NEWT_ID=${NEWT_ID:-"default_id"}
 NEWT_SECRET=${NEWT_SECRET:-"default_secret"}
 
-# Ensure Docker is running
+# Check if Docker is available
 if ! docker info >/dev/null 2>&1; then
     echo "Docker is not available inside Home Assistant OS!"
     exit 1
