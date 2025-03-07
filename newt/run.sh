@@ -1,26 +1,26 @@
 #!/usr/bin/env bash
 set -e
 
-echo "Starter Newt container..."
+echo "Starting Newt container..."
 
-# Hent verdier fra Home Assistant config
+# Load config from Home Assistant options
 PANGOLIN_ENDPOINT=$(bashio::config 'PANGOLIN_ENDPOINT')
 NEWT_ID=$(bashio::config 'NEWT_ID')
 NEWT_SECRET=$(bashio::config 'NEWT_SECRET')
 
-# Sjekk at Docker kjører
+# Ensure Docker is running
 if ! docker info >/dev/null 2>&1; then
-    echo "Docker er ikke tilgjengelig i Home Assistant OS!"
+    echo "Docker is not available inside Home Assistant OS!"
     exit 1
 fi
 
-# Stopp og fjern gammel container hvis den finnes
+# Stop and remove any existing Newt container
 if docker ps -a --format '{{.Names}}' | grep -q "newt"; then
     docker stop newt
     docker rm newt
 fi
 
-# Kjør Newt-containeren
+# Run Newt container
 docker run -d --restart unless-stopped \
     --name newt \
     -e PANGOLIN_ENDPOINT="$PANGOLIN_ENDPOINT" \
@@ -28,5 +28,7 @@ docker run -d --restart unless-stopped \
     -e NEWT_SECRET="$NEWT_SECRET" \
     fosrl/newt
 
-echo "Newt-container kjører!"
+echo "Newt container is running!"
+
+# Prevent the script from exiting (keeps the add-on running)
 exec tail -f /dev/null
