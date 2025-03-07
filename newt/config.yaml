@@ -1,5 +1,5 @@
 name: "Newt Add-on"
-version: "1.0.5"
+version: "1.0.6"  # Incremented to force update
 slug: "newt"
 description: "Runs the Newt container inside Home Assistant using Supervisor API"
 arch:
@@ -7,10 +7,12 @@ arch:
   - armv7
   - armhf
   - aarch64
-startup: system
-boot: auto
+startup: "system"
+boot: "auto"
 host_network: true
-privileged: true
+privileged: 
+  - SYS_ADMIN
+  - NET_ADMIN
 options:
   PANGOLIN_ENDPOINT: "https://example.com"
   NEWT_ID: "your_newt_id"
@@ -19,6 +21,7 @@ schema:
   PANGOLIN_ENDPOINT: "str?"
   NEWT_ID: "str?"
   NEWT_SECRET: "str?"
-homeassistant: true
 hassio_api: true
+homeassistant_api: true
+auth_api: true
 hassio_role: "admin"
