@@ -7,15 +7,17 @@ arch:
   - armv7
   - armhf
   - aarch64
-startup: "system"
-boot: "auto"
+startup: system
+boot: auto
 host_network: true
-privileged: true
+privileged:
+  - NET_ADMIN
+  - SYS_ADMIN
 options:
   PANGOLIN_ENDPOINT: "https://example.com"
   NEWT_ID: "your_newt_id"
   NEWT_SECRET: "your_newt_secret"
 schema:
-  PANGOLIN_ENDPOINT: "str"
-  NEWT_ID: "str"
-  NEWT_SECRET: "str"
+  PANGOLIN_ENDPOINT: "str?"
+  NEWT_ID: "str?"
+  NEWT_SECRET: "str?"
