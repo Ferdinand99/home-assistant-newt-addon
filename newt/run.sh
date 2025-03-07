@@ -30,5 +30,5 @@ docker run -d --restart unless-stopped \
 
 echo "Newt container is running!"
 
-# Prevent the script from exiting (keeps the add-on running)
+# Prevent the script from exiting (Keeps the add-on running)
 exec tail -f /dev/null
