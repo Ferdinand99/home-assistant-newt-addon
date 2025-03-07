@@ -5,8 +5,8 @@ echo "🔹 Starting Newt inside Home Assistant OS..."
 
 # Load configuration values
 PANGOLIN_ENDPOINT=${PANGOLIN_ENDPOINT:-"https://dash.opland.net"}
-NEWT_ID=${NEWT_ID:-"your_newt_id"}
-NEWT_SECRET=${NEWT_SECRET:-"your_newt_secret"}
+NEWT_ID=${NEWT_ID:-"ru32vsg8ls5lx93"}
+NEWT_SECRET=${NEWT_SECRET:-"5rbqgpc292989uk9kz52hmypoyz6u9jf7k670fqja8p4un8o"}
 
 echo "✅ Configuration Loaded:"
 echo "  PANGOLIN_ENDPOINT=$PANGOLIN_ENDPOINT"
