@@ -1,5 +1,5 @@
 name: "Newt Add-on"
-version: "1.2.4"
+version: "1.2.5"
 slug: "newt"
 description: "Runs Newt inside Home Assistant OS"
 arch:
@@ -29,3 +29,5 @@ hassio_api: true
 homeassistant_api: true
 auth_api: true
 hassio_role: "admin"
+# Reference the changelog
+changelog: "https://github.com/Ferdinand99/home-assistant-newt-addon/blob/main/CHANGELOG.md"
