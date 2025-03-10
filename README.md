@@ -20,7 +20,11 @@ This Home Assistant add-on allows you to easily run **Newt** from [Fossorial](ht
    ```
    https://github.com/Ferdinand99/home-assistant-newt-addon
    ```
-4. Click **Add** and wait for the repository to load.
+   or
+   ```
+   https://git.opland.net/Ferdinand99/home-assistant-newt-addon
+   ```
+5. Click **Add** and wait for the repository to load.
 
 ### **2️⃣ Install and Start the Add-on**
 1. Find **Newt Add-on** in the list and click **Install**.
