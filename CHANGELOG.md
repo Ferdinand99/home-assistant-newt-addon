@@ -1,5 +1,8 @@
 # Changelog
 
+## 🔹 Version 1.2.6 - (2025-03-15)
+- Updated newt to release 1.1.1
+
 ## 🔹 Version 1.2.5 - (2025-03-08)
 - Added built in Home Assistant Changelog support
 
