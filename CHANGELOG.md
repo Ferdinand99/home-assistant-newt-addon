@@ -1,5 +1,8 @@
 # Changelog
 
+## 🔹 Version 1.3.1 - (2025-04-07)
+- Updated newt to release 1.1.3
+
 ## 🔹 Version 1.3.0 - (2025-04-06)
 - Made changes to run.sh. Should allow the addon to reconnect after loosing connection to Pangolin
 
