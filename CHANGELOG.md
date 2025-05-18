@@ -1,5 +1,8 @@
 # Changelog
 
+## 🔹 Version 1.3.2 - (2025-05-18)
+- Added add-on icon
+
 ## 🔹 Version 1.3.1 - (2025-04-07)
 - Updated newt to release 1.1.3
 
