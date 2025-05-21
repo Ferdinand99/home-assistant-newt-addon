@@ -21,7 +21,8 @@ This Home Assistant add-on allows you to easily run **Newt** from [Fossorial](ht
 ## 🤝 Contributing
 
 Want to help improve this project?  
-Check out [CONTRIBUTING.md](CONTRIBUTING.md) to get started, or join our community on [Discord](https://discord.gg/fTHY3ZM8nY)!
+Check out [CONTRIBUTING.md](CONTRIBUTING.md) to get started. 
+Issues can be postet on our community discord! [Discord](https://discord.gg/fTHY3ZM8nY)!
 
 ---
 
