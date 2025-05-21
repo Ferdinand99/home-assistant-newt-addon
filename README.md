@@ -18,6 +18,13 @@ This Home Assistant add-on allows you to easily run **Newt** from [Fossorial](ht
 
 ---
 
+## 🤝 Contributing
+
+Want to help improve this project?  
+Check out [CONTRIBUTING.md](CONTRIBUTING.md) to get started, or join our community on [Discord](https://discord.gg/fTHY3ZM8nY)!
+
+---
+
 ## 🛠️ Installation
 
 ### **1️⃣ Add the GitHub Repository as an Add-on Source**
@@ -137,14 +144,6 @@ ha core restart
 - 📖 [Newt Documentation](https://docs.fossorial.io/Newt/overview)
 - 🏡 [Home Assistant](https://www.home-assistant.io/)
 - 🐳 [Docker Docs](https://docs.docker.com/)
-
----
-
-## ❤️ Contribute
-Have suggestions for improvements? Create a **Pull Request** or report an issue in the in the discord https://discord.com/invite/fTHY3ZM8nY!
-
-➡️ [Contributing Guide](CONTRIBUTING.md)
-
 
 ---
 
