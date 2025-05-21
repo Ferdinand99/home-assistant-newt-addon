@@ -134,7 +134,10 @@ ha core restart
 ---
 
 ## ❤️ Contribute
-Have suggestions for improvements? Create a **Pull Request** or report an issue in the **Issues** tab!
+Have suggestions for improvements? Create a **Pull Request** or report an issue in the in the discord !
+
+➡️ [Contributing Guide](CONTRIBUTING.md)
+
 
 ---
 
