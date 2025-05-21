@@ -9,7 +9,7 @@ We welcome all kinds of contributions — from code, testing, documentation, tra
 
 - 📦 Add-on Repository: https://github.com/Ferdinand99/home-assistant-newt-addon
 - 📚 Documentation: https://docs.fossorial.io/Newt/overview
-- 💬 Community: Join us on Discord → [[Invite Link]](https://discord.gg/fTHY3ZM8nY)
+- 💬 Community: Join us on Discord → https://discord.gg/fTHY3ZM8nY
 
 ---
 
