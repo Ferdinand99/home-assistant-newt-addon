@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - 'Changelog.md'
+      - 'CHANGELOG.md'
 
 jobs:
   post_to_discord:
