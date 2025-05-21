@@ -1,5 +1,9 @@
 # Changelog
 
+## 🔹 Version 1.3.3 - (2025-05-21)
+- First automated changelog post to Discord!
+- Version Bump
+
 ## 🔹 Version 1.3.2 - (2025-05-18)
 - Added add-on icon
 
