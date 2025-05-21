@@ -43,6 +43,7 @@ jobs:
           curl -H "Content-Type: application/json" \
           -X POST \
           -d "{
+            \"content\": \"<@&1374737922980581436>\",
             \"username\": \"Newt Changelog Bot\",
             \"embeds\": [{
               \"title\": \"📦 New Changelog Update\",
