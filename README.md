@@ -1,4 +1,4 @@
-![Discord](https://img.shields.io/discord/1373412082044899438?style=for-the-badge)
+[![Discord](https://img.shields.io/discord/1373412082044899438?style=for-the-badge)]([https://discord.gg/YOUR_INVITE_CODE](https://discord.com/invite/fTHY3ZM8nY))
 
 # 🏡 Home Assistant Newt Add-on
 
