@@ -30,7 +30,7 @@ jobs:
               if (/^## /) exit;
               print $0;
             }
-          ' Changelog.md)
+          ' CHANGELOG.md)
 
           # Escape for JSON
           changelog_block=$(echo "$changelog_block" | sed 's/"/\\"/g' | sed ':a;N;$!ba;s/\n/\\n/g')
