@@ -1,3 +1,5 @@
+![Discord](https://img.shields.io/discord/1373412082044899438?style=for-the-badge)
+
 # 🏡 Home Assistant Newt Add-on
 
 ## 📌 About this Add-on
