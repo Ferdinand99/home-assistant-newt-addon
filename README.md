@@ -1,4 +1,4 @@
-[![Discord](https://img.shields.io/discord/1373412082044899438?style=for-the-badge)](https://discord.gg/fTHY3ZM8nY) [![GitHub commit activity](https://img.shields.io/github/commit-activity/m/Ferdinand99/home-assistant-newt-addon)](https://github.com/Ferdinand99/home-assistant-newt-addon/commits)
+[![Discord](https://img.shields.io/discord/1373412082044899438?style=for-the-badge)](https://discord.gg/fTHY3ZM8nY) [![GitHub commit activity](https://img.shields.io/github/commit-activity/m/Ferdinand99/home-assistant-newt-addon?style=for-the-badge)](https://github.com/Ferdinand99/home-assistant-newt-addon/commits)
 
 
 # 🏡 Home Assistant Newt Add-on
