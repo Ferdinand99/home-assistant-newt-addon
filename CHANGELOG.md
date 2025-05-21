@@ -1,5 +1,8 @@
 # Changelog
 
+## 🔹 Version 1.3.5 - (2025-05-21)
+- Test Discord webhook automation trigger
+
 ## 🔹 Version 1.3.4 - (2025-05-21)
 - Test Discord webhook automation trigger
 
