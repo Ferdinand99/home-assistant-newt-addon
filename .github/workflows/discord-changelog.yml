@@ -1,0 +1,53 @@
+name: Post Changelog to Discord
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'Changelog.md'
+
+jobs:
+  post_to_discord:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Extract latest changelog block
+        id: changelog
+        run: |
+          changelog_block=$(awk '
+            BEGIN { found=0 }
+            /^## 🔹 Version / {
+              if (found) exit;
+              found=1;
+              print $0;
+              next;
+            }
+            found {
+              if (/^## /) exit;
+              print $0;
+            }
+          ' Changelog.md)
+
+          # Escape for JSON
+          changelog_block=$(echo "$changelog_block" | sed 's/"/\\"/g' | sed ':a;N;$!ba;s/\n/\\n/g')
+          echo "BLOCK=$changelog_block" >> $GITHUB_OUTPUT
+
+      - name: Send to Discord
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_CHANGELOG_WEBHOOK }}
+        run: |
+          curl -H "Content-Type: application/json" \
+          -X POST \
+          -d "{
+            \"username\": \"Newt Changelog Bot\",
+            \"embeds\": [{
+              \"title\": \"📦 New Changelog Update\",
+              \"description\": \"${{ steps.changelog.outputs.BLOCK }}\",
+              \"color\": 7506394
+            }]
+          }" \
+          $DISCORD_WEBHOOK
