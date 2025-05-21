@@ -1,8 +1,5 @@
 # Changelog
 
-## 🔹 Version 1.3.4 - (2025-05-21)
-- Added Role Pinging
-
 ## 🔹 Version 1.3.3 - (2025-05-21)
 - First automated changelog post to Discord!
 - Version Bump
