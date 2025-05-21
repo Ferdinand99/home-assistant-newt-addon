@@ -1,8 +1,11 @@
-[![Discord](https://img.shields.io/discord/1373412082044899438?style=for-the-badge&label=Discord)](https://discord.gg/fTHY3ZM8nY) [![GitHub commit activity](https://img.shields.io/github/commit-activity/m/Ferdinand99/home-assistant-newt-addon?style=for-the-badge)](https://github.com/Ferdinand99/home-assistant-newt-addon/commits) ![GitHub last commit](https://img.shields.io/github/last-commit/Ferdinand99/home-assistant-newt-addon?style=for-the-badge) [![GitHub Repo stars](https://img.shields.io/github/stars/Ferdinand99/home-assistant-newt-addon?style=for-the-badge)](https://github.com/Ferdinand99/home-assistant-newt-addon/stargazers) [![GitHub forks](https://img.shields.io/github/forks/Ferdinand99/home-assistant-newt-addon?style=for-the-badge)](https://github.com/Ferdinand99/home-assistant-newt-addon/network/members)
-
-
-
 # 🏡 Home Assistant Newt Add-on
+[![Discord](https://img.shields.io/discord/1373412082044899438?style=for-the-badge&label=Discord)](https://discord.gg/fTHY3ZM8nY)
+[![GitHub commit activity](https://img.shields.io/github/commit-activity/m/Ferdinand99/home-assistant-newt-addon?style=for-the-badge)](https://github.com/Ferdinand99/home-assistant-newt-addon/commits)
+![GitHub last commit](https://img.shields.io/github/last-commit/Ferdinand99/home-assistant-newt-addon?style=for-the-badge)
+[![GitHub Repo stars](https://img.shields.io/github/stars/Ferdinand99/home-assistant-newt-addon?style=for-the-badge)](https://github.com/Ferdinand99/home-assistant-newt-addon/stargazers)
+[![GitHub forks](https://img.shields.io/github/forks/Ferdinand99/home-assistant-newt-addon?style=for-the-badge)](https://github.com/Ferdinand99/home-assistant-newt-addon/network/members)
+
+---
 
 ## 📌 About this Add-on
 This Home Assistant add-on allows you to easily run **Newt** from [Fossorial](https://docs.fossorial.io/Newt/overview) directly in Home Assistant. The add-on lets you configure **PANGOLIN_ENDPOINT**, **NEWT_ID**, and **NEWT_SECRET** via the Home Assistant interface.
