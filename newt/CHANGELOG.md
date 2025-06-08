@@ -3,6 +3,9 @@
 ## 🔹 Version 1.3.4 - (2025-06-08)
 - Updated newt version to 1.2.1
 
+## 🔹 Version 1.3.4 - (2025-06-08)
+- Updated newt version to 1.2.1
+
 ## 🔹 Version 1.3.3 - (2025-05-21)
 - First automated changelog post to Discord!
 - Version Bump
