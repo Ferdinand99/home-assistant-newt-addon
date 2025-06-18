@@ -12,6 +12,8 @@ jobs:
     steps:
       - name: Checkout GitHub repo
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # Henter hele repoet, ikke bare siste commit
 
       - name: Push to Forgejo
         run: |
