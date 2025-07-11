@@ -1,5 +1,8 @@
 # Changelog
 
+## 🔹 Version 1.3.5 - (2025-07-11)
+- Updated newt version to 1.3.0
+
 ## 🔹 Version 1.3.4 - (2025-06-08)
 - Updated newt version to 1.2.1
 
