@@ -1,5 +1,8 @@
 # Changelog
 
+## 🔹 Version 1.3.9 - (2025-07-19)
+- Small changes to fix ping issue. Added - NET_RAW in config.json
+
 ## 🔹 Version 1.3.8 - (2025-07-19)
 - Updated newt version to 1.3.4
 
