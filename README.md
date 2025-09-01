@@ -135,5 +135,5 @@ ha core restart
 
 ---
 
-© 2025 - Made with ❤️ for Home Assistant users 🚀
+Made with ❤️ for Home Assistant users 🚀
 
