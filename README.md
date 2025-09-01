@@ -53,16 +53,7 @@ Issues can be postet on our community discord! [Discord](https://discord.gg/fTHY
 
 ---
 
-## ⚙️ Configuration
-After installation, you can configure the add-on via the Home Assistant UI:
-
-```yaml
-PANGOLIN_ENDPOINT: "https://example.com"
-NEWT_ID: "your_newt_id"
-NEWT_SECRET: "your_newt_secret"
-```
-
-### **Docker Environment Variables**
+## **Docker Environment Variables**
 The following environment variables are passed to the `Newt` container:
 - `PANGOLIN_ENDPOINT`
 - `NEWT_ID`
@@ -76,7 +67,7 @@ The following environment variables are passed to the `Newt` container:
 
 1. Open your `configuration.yaml` file (usually located in `/config`).
 2. Add or update the `http:` section to include `use_x_forwarded_for` and `trusted_proxies`:
-
+#### NOTE: You should get a message in your Home-Assistant logs with the IP you need to set below when it's not already set
 ```yaml
 http:
   use_x_forwarded_for: true
@@ -84,6 +75,7 @@ http:
     - 172.30.33.0/24  # Default range for Home Assistant add-ons
     - 127.0.0.1       # Localhost (if relevant)
     - 192.168.1.100   # Example: IP of your reverse proxy or VM host
+    - 192.168.1.2     # Home-Assistant IP
 ```
 
 🔎 How to Find Your Add-on or Proxy IP
@@ -126,12 +118,6 @@ ha core restart
 
 💡 **Changes in configuration do not take effect?**
 - Restart the add-on after making changes.
-- Try removing the container manually:
-  ```sh
-  docker stop newt
-  docker rm newt
-  ```
-  Then start the add-on again.
 
 💡 **Docker not available?**
 - Home Assistant OS manages Docker automatically, but check if the system has access to Docker by running:
