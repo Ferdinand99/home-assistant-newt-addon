@@ -1,5 +1,8 @@
 # Changelog
 
+## 🔹 Version 1.4.4 - (2025-09-02)
+- Updated NEWT to version 1.4.4
+
 ## 🔹 Version 1.4.3 - (2025-09-02)
 - Updated NEWT to version 1.4.3
 
