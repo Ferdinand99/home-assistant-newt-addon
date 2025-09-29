@@ -5,7 +5,6 @@
 [![GitHub Repo stars](https://img.shields.io/github/stars/Ferdinand99/home-assistant-newt-addon?style=for-the-badge)](https://github.com/Ferdinand99/home-assistant-newt-addon/stargazers)
 [![GitHub forks](https://img.shields.io/github/forks/Ferdinand99/home-assistant-newt-addon?style=for-the-badge)](https://github.com/Ferdinand99/home-assistant-newt-addon/network/members)
 
-# Issues moved back to Github, but will be kept on discord for those who have reported problems there
 ---
 
 ## 📌 About this Add-on
