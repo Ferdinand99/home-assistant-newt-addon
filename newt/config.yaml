@@ -25,7 +25,8 @@ schema:
   PANGOLIN_ENDPOINT: "str"
   NEWT_ID: "str"
   NEWT_SECRET: "str"
-  custom_env_vars: "list(match(^[A-Z_][A-Z0-9_]*=.*$))?"
+  custom_env_vars:
+    - "match(^[A-Z_][A-Z0-9_]*=.+$)"
 map:
   - config:rw
 hassio_api: true
