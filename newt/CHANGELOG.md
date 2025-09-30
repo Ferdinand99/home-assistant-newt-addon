@@ -1,5 +1,8 @@
 # Changelog
 
+## 🔹 Version 1.4.7 - (TBD)
+- Added support for custom environment variables
+
 ## 🔹 Version 1.4.6 - (2025-09-29)
 - Updated NEWT to version 1.5.1
 
