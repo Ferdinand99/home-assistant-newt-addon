@@ -35,4 +35,4 @@ homeassistant_api: true
 auth_api: true
 hassio_role: "admin"
 # Reference the changelog
-changelog: "https://raw.githubusercontent.com/r3nor/home-assistant-newt-addon/main/CHANGELOG.md"
+changelog: "https://raw.githubusercontent.com/Ferdinand99/home-assistant-newt-addon/main/CHANGELOG.md"
