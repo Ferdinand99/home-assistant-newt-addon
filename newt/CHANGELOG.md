@@ -1,5 +1,8 @@
 # Changelog
 
+## 🔹 Version 1.4.8 - (2025-10-09)
+- Updated NEWT to version 1.5.2
+
 ## 🔹 Version 1.4.7 - (2025-09-30)
 - Added support for custom environment variables (PR Contribution by @r3nor)
 
