@@ -1,5 +1,5 @@
 name: "Newt Add-on"
-version: "1.4.8"
+version: "1.4.9"
 slug: "newt"
 description: "Runs Newt inside Home Assistant OS"
 icon: "icon.png"
