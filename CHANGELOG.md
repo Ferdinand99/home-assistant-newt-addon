@@ -1,5 +1,9 @@
 # Changelog
 
+## 🔹 Version 1.6.0 - (30.10.2025)
+- Bumped addon version to match newt version
+- Updated timestamp in chanelog to match local format
+
 ## 🔹 Version 1.4.9 - (2025-10-28)
 - Updated NEWT to version 1.6.0
 
