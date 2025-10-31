@@ -1,5 +1,8 @@
 # Changelog
 
+## 🔹 Version 1.6.0.1 - (31.10.2025)
+- Added a possible fix to the Newt version bug in the Pangolin Dashboard
+
 ## 🔹 Version 1.6.0 - (30.10.2025)
 - Bumped addon version to match newt version
 - Updated timestamp in chanelog to match local format
