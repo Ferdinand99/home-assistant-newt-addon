@@ -1,5 +1,10 @@
 # Changelog
 
+## 🔹 Version 1.8.1 - (24.12.2025)
+- Updated newt version to 1.8.1
+- chore(nix): add nix hash update automation by @water-sucks in #217
+- Fix health check leaking socket binds
+
 ## 🔹 Version 1.8.0 - (23.12.2025)
 - Updated newt version to 1.8.0 to support the new Pangolin update
 - Port firewalling for Private Resources by @oschwartz10612 in #203
