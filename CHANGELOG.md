@@ -1,7 +1,19 @@
 # Changelog
 
+## 🔹 Version 1.8.1 - (24.12.2025)
+- Updated newt version to 1.8.1
+- chore(nix): add nix hash update automation by @water-sucks in #217
+- Fix health check leaking socket binds
+
+## 🔹 Version 1.8.0 - (23.12.2025)
+- Updated newt version to 1.8.0 to support the new Pangolin update
+- Port firewalling for Private Resources by @oschwartz10612 in #203
+- Support ICMP test requests for clients by @oschwartz10612 in #208
+- fix(nix): use correct hash for vendored deps by @water-sucks in #199
+- feat(build): parallelize go-build-release and github actions with matrix by @water-sucks in #200
+
 ## 🔹 Version 1.7.0 - (12.12.2025)
-- Updated newt version to support the new pangolin update
+- Updated newt version to 1.7.0 to support the new Pangolin update
 
 ## 🔹 Version 1.6.0.1 - (31.10.2025)
 - Added a possible fix to the Newt version bug in the Pangolin Dashboard
