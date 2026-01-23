@@ -1,5 +1,8 @@
 # Changelog
 
+## 🔹 Version 1.9.0 - (23.01.2026)
+- Updated newt to 1.9.0
+
 ## 🔹 Version 1.8.1 - (24.12.2025)
 - Updated newt version to 1.8.1
 - chore(nix): add nix hash update automation by @water-sucks in #217
