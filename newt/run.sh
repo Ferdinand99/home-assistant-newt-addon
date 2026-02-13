@@ -25,7 +25,6 @@ fi
 echo "✅ Configuration Loaded:"
 echo "  PANGOLIN_ENDPOINT=$PANGOLIN_ENDPOINT"
 echo "  NEWT_ID=$NEWT_ID"
-echo "  NEWT_SECRET=$NEWT_SECRET"
 
 # Process and display custom environment variables
 EXTRA_ENV=""
