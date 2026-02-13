@@ -1,9 +1,6 @@
 # 🏡 Home Assistant Newt Add-on
-[![Discord](https://img.shields.io/discord/1373412082044899438?style=for-the-badge&label=Discord)](https://discord.gg/fTHY3ZM8nY)
-[![GitHub commit activity](https://img.shields.io/github/commit-activity/m/Ferdinand99/home-assistant-newt-addon?style=for-the-badge)](https://github.com/Ferdinand99/home-assistant-newt-addon/commits)
-![GitHub last commit](https://img.shields.io/github/last-commit/Ferdinand99/home-assistant-newt-addon?style=for-the-badge)
-[![GitHub Repo stars](https://img.shields.io/github/stars/Ferdinand99/home-assistant-newt-addon?style=for-the-badge)](https://github.com/Ferdinand99/home-assistant-newt-addon/stargazers)
-[![GitHub forks](https://img.shields.io/github/forks/Ferdinand99/home-assistant-newt-addon?style=for-the-badge)](https://github.com/Ferdinand99/home-assistant-newt-addon/network/members)
+
+I forked this btw
 
 ---
 
@@ -19,11 +16,6 @@ This Home Assistant add-on allows you to easily run **Newt** from [Fossorial](ht
 ---
 
 ## 🤝 Contributing
-
-Want to help improve this project?
-Check out [CONTRIBUTING.md](CONTRIBUTING.md) to get started.
-Issues can be postet on our community discord! [Discord](https://discord.gg/fTHY3ZM8nY)!
-
 ---
 
 ## 🛠️ Installation
@@ -33,11 +25,7 @@ Issues can be postet on our community discord! [Discord](https://discord.gg/fTHY
 2. Click the menu (three dots in the top right) and select **Repositories**.
 3. Add the following URL:
    ```
-   https://github.com/Ferdinand99/home-assistant-newt-addon
-   ```
-   or
-   ```
-   https://git.opland.net/Ferdinand99/home-assistant-newt-addon
+   https://github.com/sevvlor/home-assistant-newt-addon
    ```
 5. Click **Add** and wait for the repository to load.
 
