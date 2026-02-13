@@ -12,10 +12,7 @@ startup: system
 boot: auto
 host_network: true
 privileged:
-  - SYS_ADMIN
   - NET_ADMIN
-  - NET_RAW
-  - DAC_READ_SEARCH
 options:
   PANGOLIN_ENDPOINT: "https://example.com"
   NEWT_ID: "your_newt_id"
@@ -29,9 +26,4 @@ schema:
     - "match(^[A-Z_][A-Z0-9_]*=.+$)"
 map:
   - config:rw
-hassio_api: true
-homeassistant_api: true
-auth_api: true
-hassio_role: "admin"
-# Reference the changelog
 changelog: "https://raw.githubusercontent.com/Ferdinand99/home-assistant-newt-addon/main/CHANGELOG.md"
