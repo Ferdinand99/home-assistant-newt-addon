@@ -26,4 +26,4 @@ schema:
     - "match(^[A-Z_][A-Z0-9_]*=.+$)"
 map:
   - config:rw
-changelog: "https://raw.githubusercontent.com/Ferdinand99/home-assistant-newt-addon/main/CHANGELOG.md"
+changelog: "https://raw.githubusercontent.com/sevvlor/home-assistant-newt-addon/main/CHANGELOG.md"
