@@ -1,5 +1,8 @@
 # Changelog
 
+## 🔹 Version 1.9.1.1 - (19.02.2026)
+- Reverted to newt 1.9.0 as 1.9.1 wasn't released yet and therefore giving an error
+
 ## 🔹 Version 1.9.1 - (19.02.2026)
 - Updated newt to 1.9.1
 
