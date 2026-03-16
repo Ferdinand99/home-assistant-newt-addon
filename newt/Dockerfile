@@ -29,5 +29,12 @@ RUN ARCH=$(uname -m) && \
 COPY run.sh /run.sh
 RUN chmod +x /run.sh
 
+# Enable Newt health file
+ENV HEALTH_FILE=/tmp/healthy
+
+# Docker healthcheck
+HEALTHCHECK --interval=5s --timeout=2s --retries=2 --start-period=10s \
+  CMD test -f /tmp/healthy || exit 1
+
 # Start the add-on
 ENTRYPOINT ["/run.sh"]
