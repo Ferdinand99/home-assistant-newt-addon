@@ -1,5 +1,8 @@
 # Changelog
 
+## 🔹 Version 1.10.1.1 - (16.03.2026)
+- Added healtcheck variable
+
 ## 🔹 Version 1.10.1 - (09.03.2026)
 - Reverted Newt to 1.10.1 since fosrl removed the 1.10.2 release, causing a issue updating this add-on to 1.10.2
 
