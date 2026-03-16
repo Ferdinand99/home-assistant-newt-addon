@@ -1,5 +1,9 @@
 # Changelog
 
+## 🔹 Version 1.10.2 - (16.03.2026)
+- Small changes in run.sh file
+- Updated newt version to 1.10.2
+
 ## 🔹 Version 1.10.1.1 - (16.03.2026)
 - Added healtcheck variable
 
