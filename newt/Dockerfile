@@ -1,9 +1,12 @@
 # Use the official Home Assistant add-on base image
 FROM ghcr.io/hassio-addons/base:14.0.0
 
-# Define the Newt version (used everywhere below)
-ARG NEWT_VERSION=1.10.1
+# Define the Newt version
+ARG NEWT_VERSION=1.10.2
 ENV NEWT_VERSION=${NEWT_VERSION}
+
+# Enable Newt health file
+ENV HEALTH_FILE=/tmp/healthy
 
 # Install dependencies
 RUN apk add --no-cache bash curl jq
@@ -28,9 +31,6 @@ RUN ARCH=$(uname -m) && \
 # Copy and prepare run script
 COPY run.sh /run.sh
 RUN chmod +x /run.sh
-
-# Enable Newt health file
-ENV HEALTH_FILE=/tmp/healthy
 
 # Docker healthcheck
 HEALTHCHECK --interval=5s --timeout=2s --retries=2 --start-period=10s \
