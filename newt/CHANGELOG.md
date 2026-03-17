@@ -1,5 +1,8 @@
 # Changelog
 
+## 🔹 Version 1.10.3.2 - (17.03.2026)
+- Small changes to make AppArmor work
+
 ## 🔹 Version 1.10.3.1 - (17.03.2026)
 - Testing AppArmor profile for a more secure addon
 
