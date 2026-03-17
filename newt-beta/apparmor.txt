@@ -20,6 +20,7 @@ profile hassio-addons-newt flags=(attach_disconnected,mediate_deleted) {
   /bin/bash ix,
   /usr/bin/bash ix,
   /usr/bin/jq ix,
+  /bin/rm ix,
   /run.sh rix,
   /usr/bin/newt ixr,
 
