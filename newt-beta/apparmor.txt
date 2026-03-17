@@ -16,6 +16,9 @@ profile hassio-addons-newt flags=(attach_disconnected,mediate_deleted) {
   network,
 
   # Runtime binaries/scripts.
+  /usr/bin/env ix,
+  /bin/bash ix,
+  /usr/bin/bash ix,
   /run.sh rix,
   /usr/bin/newt ixr,
 
