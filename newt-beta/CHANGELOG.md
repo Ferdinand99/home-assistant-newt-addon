@@ -1,5 +1,9 @@
 # Changelog
 
+## 🔹 Version 1.10.3-beta8 - (17.03.2026)
+- Set HOME and XDG_CONFIG_HOME to /data paths so Newt no longer attempts to write under /root/.config
+- Updated AppArmor profile to allow Newt config persistence under /data
+
 ## 🔹 Version 1.10.3-beta7 - (17.03.2026)
 - Fixed AppArmor profile to allow /bin/busybox execution used by /bin/rm on Alpine-based images
 

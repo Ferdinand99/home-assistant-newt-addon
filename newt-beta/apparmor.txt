@@ -25,8 +25,8 @@ profile hassio-addons-newt flags=(attach_disconnected,mediate_deleted) {
   /run.sh rix,
   /usr/bin/newt ixr,
 
-  # Read Home Assistant add-on options and TLS trust store.
-  /data/** r,
+  # Read add-on options and allow Newt to persist its own config under /data.
+  /data/** rwk,
   /etc/ssl/** r,
   /etc/hosts r,
   /etc/resolv.conf r,
