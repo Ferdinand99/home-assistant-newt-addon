@@ -1,5 +1,8 @@
 # Changelog
 
+## 🔹 Version 1.10.3.1 - (17.03.2026)
+- Testing AppArmor profile for a more secure addon
+
 ## 🔹 Version 1.10.3 - (17.03.2026)
 - Bumped Newt to version 1.10.3
 
