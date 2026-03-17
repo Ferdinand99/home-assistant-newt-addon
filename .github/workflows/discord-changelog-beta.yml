@@ -1,22 +1,23 @@
-name: Post Changelog to Discord
+name: Post Beta Changelog to Discord
 
 on:
   push:
     branches:
       - main
     paths:
-      - 'CHANGELOG.md'
+      - "newt-beta/CHANGELOG.md"
 
 jobs:
-  post_to_discord:
+  post_beta_changelog:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Extract latest changelog block
         id: changelog
+        shell: bash
         run: |
           changelog_block=$(awk '
             BEGIN { found=0 }
@@ -30,25 +31,24 @@ jobs:
               if (/^## /) exit;
               print $0;
             }
-          ' CHANGELOG.md)
+          ' newt-beta/CHANGELOG.md)
 
-          # Escape for JSON
           changelog_block=$(echo "$changelog_block" | sed 's/"/\\"/g' | sed ':a;N;$!ba;s/\n/\\n/g')
-          echo "BLOCK=$changelog_block" >> $GITHUB_OUTPUT
+          echo "BLOCK=$changelog_block" >> "$GITHUB_OUTPUT"
 
       - name: Send to Discord
         env:
-          DISCORD_WEBHOOK: ${{ secrets.DISCORD_CHANGELOG_WEBHOOK }}
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_CHANGELOG_WEBHOOK_BETA }}
+        shell: bash
         run: |
           curl -H "Content-Type: application/json" \
           -X POST \
           -d "{
-            \"content\": \"<@&1374737922980581436>\",
-            \"username\": \"Newt Changelog Bot\",
+            \"username\": \"Newt Beta Changelog Bot\",
             \"embeds\": [{
-              \"title\": \"📦 New Changelog Update\",
+              \"title\": \"🧪 Beta Changelog Update\",
               \"description\": \"${{ steps.changelog.outputs.BLOCK }}\",
-              \"color\": 7506394
+              \"color\": 3447003
             }]
           }" \
-          $DISCORD_WEBHOOK
+          "$DISCORD_WEBHOOK"
