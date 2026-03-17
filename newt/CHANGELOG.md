@@ -1,5 +1,8 @@
 # Changelog
 
+## 🔹 Version 1.10.3-stable1 - (17.03.2026)
+- Change update version format to mach beta branch
+
 ## 🔹 Version 1.10.3.13 - (17.03.2026)
 - Reverted Security Rating to address host system compatibility issues
 - Added full_access: true to ensure proper network tunneling performance
