@@ -1,0 +1,34 @@
+name: "Newt Add-on (Beta)"
+version: "1.10.3-beta1"
+slug: "newt-beta"
+description: "Beta release of Newt client for testing new features"
+icon: "icon.png"
+arch:
+  - amd64
+  - aarch64
+  - armv7
+  - armhf
+startup: services
+boot: auto
+host_network: true
+full_access: true
+privileged:
+  - NET_ADMIN
+  - NET_RAW
+options:
+  PANGOLIN_ENDPOINT: "https://example.com"
+  NEWT_ID: "your_newt_id"
+  NEWT_SECRET: "your_newt_secret"
+  custom_env_vars: []
+schema:
+  PANGOLIN_ENDPOINT: "str"
+  NEWT_ID: "str"
+  NEWT_SECRET: "str"
+  custom_env_vars:
+    - "match(^[A-Z_][A-Z0-9_]*=.+$)"
+map:
+  - config:rw
+hassio_api: true
+homeassistant_api: false
+auth_api: false
+hassio_role: "default"
