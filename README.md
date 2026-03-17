@@ -11,11 +11,11 @@
 This Home Assistant add-on allows you to easily run **Newt** from [Fossorial](https://docs.fossorial.io/Newt/overview) directly in Home Assistant. The add-on lets you configure **PANGOLIN_ENDPOINT**, **NEWT_ID**, and **NEWT_SECRET** via the Home Assistant interface.
 
 ## 🚀 Features
-✅ Easy installation via Home Assistant Add-on Store
-✅ Automated setup and execution of the Newt container
-✅ Supports `amd64`, `armv7`, `armhf`, and `aarch64` architectures
-✅ Automatic restart on crash
-✅ Beta branch with AppArmor enabled by default
+- ✅ Easy installation via Home Assistant Add-on Store
+- ✅ Automated setup and execution of the Newt container
+- ✅ Supports `amd64`, `armv7`, `armhf`, and `aarch64` architectures
+- ✅ Automatic restart on crash
+- ✅ Beta branch with AppArmor enabled by default
 
 ---
 
