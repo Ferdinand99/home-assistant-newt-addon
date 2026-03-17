@@ -1,5 +1,8 @@
 # Changelog
 
+## 🔹 Version 1.10.3 - (17.03.2026)
+- Bumped Newt to version 1.10.3
+
 ## 🔹 Version 1.10.2 - (16.03.2026)
 - Small changes in run.sh file
 - Updated newt version to 1.10.2
