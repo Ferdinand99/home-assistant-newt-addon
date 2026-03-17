@@ -1,6 +1,6 @@
 # Changelog
 
-## 🔹 Version 1.10.3.12 - (17.03.2026)
+## 🔹 Version 1.10.3.13 - (17.03.2026)
 - Reverted Security Rating to address host system compatibility issues
 - Added full_access: true to ensure proper network tunneling performance
 
