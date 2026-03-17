@@ -2,7 +2,7 @@
 FROM ghcr.io/hassio-addons/base:14.0.0
 
 # Define the Newt version
-ARG NEWT_VERSION=1.10.2
+ARG NEWT_VERSION=1.10.3
 ENV NEWT_VERSION=${NEWT_VERSION}
 
 # Enable Newt health file

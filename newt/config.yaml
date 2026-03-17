@@ -1,7 +1,7 @@
-name: "Newt Add-on"
-version: "1.10.2"
-slug: "newt"
-description: "Runs Newt inside Home Assistant OS"
+name: "Newt Add-on (Beta)"
+version: "1.10.2-beta1"
+slug: "newt-beta"
+description: "Beta testing av Newt med forbedret sikkerhet"
 icon: "icon.png"
 arch:
   - amd64
@@ -11,11 +11,10 @@ arch:
 startup: system
 boot: auto
 host_network: true
+# Vi fjerner SYS_ADMIN og DAC_READ_SEARCH for å se om Newt klarer seg med kun nettverkstilgang
 privileged:
-  - SYS_ADMIN
   - NET_ADMIN
   - NET_RAW
-  - DAC_READ_SEARCH
 options:
   PANGOLIN_ENDPOINT: "https://example.com"
   NEWT_ID: "your_newt_id"
@@ -26,12 +25,11 @@ schema:
   NEWT_ID: "str"
   NEWT_SECRET: "str"
   custom_env_vars:
-    - "match(^[A-Z_][A-Z0-9_]*=.+$)"
+    - "match(^[A-Z_][A-Z0-9_]*=.+$)\"
 map:
   - config:rw
+# Nedjusterer API-tilgang for å se om det påvirker ratingen
 hassio_api: true
-homeassistant_api: true
-auth_api: true
-hassio_role: "admin"
-# Reference the changelog
-changelog: "https://raw.githubusercontent.com/Ferdinand99/home-assistant-newt-addon/main/CHANGELOG.md"
+homeassistant_api: false
+auth_api: false
+hassio_role: "default"
