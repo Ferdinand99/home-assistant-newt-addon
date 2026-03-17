@@ -2,21 +2,10 @@
 
 profile {{ name }} flags=(attach_disconnected) {
   #include <abstractions/base>
-
+  
   network,
   capability,
   file,
-
-  # Allow all addon files
-  /** rkx,
-
-  # Network and tunnel devices
-  /dev/net/tun rw,
-  /dev/net/tun rwk,
   
-  # System configs
-  /etc/nsswitch.conf r,
-  /etc/resolv.conf r,
-  /etc/hosts r,
-  /run/dbus/system_bus_socket rw,
+  /** rkx,
 }
