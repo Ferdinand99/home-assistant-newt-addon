@@ -1,5 +1,17 @@
 # Changelog
 
+## 🔹 Version 1.10.3.12 - (17.03.2026)
+Fixed
+- Installation and Visibility: Resolved an issue where the add-on would disappear from the Add-on Store or fail to install due to AppArmor validation errors.
+
+Removed
+- AppArmor Support: Temporarily removed apparmor: true from config.yaml.
+- Custom Security Profile: Deleted apparmor.txt to prevent "exit status 1" errors during the loading and unloading of the security profile.
+
+Technical Notes
+- Environment Compatibility: The removal was necessary because the host system's Linux kernel does not have AppArmor enabled or lacks the required kernel parameters (apparmor=1 security=apparmor).
+- Stability: This change reverts the Security Rating to 2 to ensure the add-on is compatible with a wider range of Home Assistant installations, specifically those running on unsupported or custom OS environments.
+
 ## 🔹 Version 1.10.3.2 - (17.03.2026)
 - Small changes to make AppArmor work
 
