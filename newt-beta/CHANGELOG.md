@@ -1,4 +1,12 @@
 # Changelog
 
-## 🔹 Version 1.10.3-beta1 - (17.03.2026)
-- Added beta version of the Addon (Nothing new in this release)
+## 🔹 Version 1.10.3-beta2 - (17.03.2026)
+- Removed full_access to reduce privileged host exposure and improve add-on security posture
+- Disabled hassio_api access since it is not required by the runtime script
+- Hardened custom environment variable validation in run.sh
+- Redacted sensitive runtime values from logs to prevent secret leakage
+- Hardened binary download flags in Dockerfile with enforced HTTPS/TLS and retries
+- Added a hardened AppArmor profile file for opt-in use on AppArmor-capable hosts
+- Reduced runtime package footprint by removing build-only curl after download
+- Added optional per-architecture SHA256 verification build args for Newt binaries
+- Added graceful signal handling in run.sh for cleaner Home Assistant stop/restart behavior

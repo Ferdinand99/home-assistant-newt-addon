@@ -1,0 +1,40 @@
+# Home Assistant Add-on AppArmor profile for Newt
+# Compatibility note:
+# Keep config.yaml apparmor disabled by default for hosts without AppArmor support.
+# This profile can be enabled by setting apparmor: true in config.yaml on supported hosts.
+
+#include <tunables/global>
+
+profile hassio-addons-newt flags=(attach_disconnected,mediate_deleted) {
+  #include <abstractions/base>
+
+  # Required runtime capabilities for Newt networking behavior.
+  capability net_admin,
+  capability net_raw,
+
+  # General network access for outbound tunnel connectivity.
+  network,
+
+  # Runtime binaries/scripts.
+  /run.sh rix,
+  /usr/bin/newt ixr,
+
+  # Read Home Assistant add-on options and TLS trust store.
+  /data/** r,
+  /etc/ssl/** r,
+  /etc/hosts r,
+  /etc/resolv.conf r,
+
+  # Health file and transient runtime files.
+  /tmp/** rw,
+
+  # Deny dangerous kernel/module operations.
+  deny capability sys_admin,
+  deny capability sys_module,
+  deny capability sys_ptrace,
+
+  # Deny mount and sensitive proc/sys writes.
+  deny mount,
+  deny /proc/** w,
+  deny /sys/** w,
+}

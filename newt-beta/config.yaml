@@ -1,7 +1,7 @@
 name: "Newt Add-on (Beta)"
-version: "1.10.3-beta1"
+version: "1.10.3-beta2"
 slug: "newt-beta"
-description: "Beta release of Newt client for testing new features"
+description: "Newt beta release of Newt client for testing new features"
 icon: "icon.png"
 arch:
   - amd64
@@ -11,7 +11,9 @@ arch:
 startup: services
 boot: auto
 host_network: true
-full_access: true
+# Kept disabled by default for compatibility on hosts without AppArmor support.
+# A hardened profile is provided in apparmor.txt and can be enabled on supported hosts.
+apparmor: false
 privileged:
   - NET_ADMIN
   - NET_RAW
@@ -25,10 +27,8 @@ schema:
   NEWT_ID: "str"
   NEWT_SECRET: "str"
   custom_env_vars:
-    - "match(^[A-Z_][A-Z0-9_]*=.+$)"
-map:
-  - config:rw
-hassio_api: true
+    - "match(^[A-Z_][A-Z0-9_]*=[^\\n\\r\\0]+$)"
+hassio_api: false
 homeassistant_api: false
 auth_api: false
 hassio_role: "default"

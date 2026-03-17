@@ -4,29 +4,46 @@ FROM ghcr.io/hassio-addons/base:14.0.0
 # Define the Newt version
 ARG NEWT_VERSION=1.10.3
 ENV NEWT_VERSION=${NEWT_VERSION}
+ARG NEWT_SHA256_AMD64=""
+ARG NEWT_SHA256_ARM64=""
+ARG NEWT_SHA256_ARM32=""
+ARG NEWT_SHA256_ARM32V6=""
+ARG NEWT_SHA256_RISCV64=""
 
 # Enable Newt health file
 ENV HEALTH_FILE=/tmp/healthy
 
-# Install dependencies
-RUN apk add --no-cache bash curl jq
+# Install runtime dependencies and temporary build tooling
+RUN apk add --no-cache bash jq && apk add --no-cache --virtual .build-deps curl
 
 # Detect system architecture and download the correct Newt binary
 RUN ARCH=$(uname -m) && \
     if [ "$ARCH" = "x86_64" ]; then \
-        curl -fsSL -o /usr/bin/newt https://github.com/fosrl/newt/releases/download/${NEWT_VERSION}/newt_linux_amd64; \
+        DOWNLOAD_URL="https://github.com/fosrl/newt/releases/download/${NEWT_VERSION}/newt_linux_amd64"; \
+        EXPECTED_SHA="${NEWT_SHA256_AMD64}"; \
     elif [ "$ARCH" = "aarch64" ]; then \
-        curl -fsSL -o /usr/bin/newt https://github.com/fosrl/newt/releases/download/${NEWT_VERSION}/newt_linux_arm64; \
+        DOWNLOAD_URL="https://github.com/fosrl/newt/releases/download/${NEWT_VERSION}/newt_linux_arm64"; \
+        EXPECTED_SHA="${NEWT_SHA256_ARM64}"; \
     elif [ "$ARCH" = "armv7l" ]; then \
-        curl -fsSL -o /usr/bin/newt https://github.com/fosrl/newt/releases/download/${NEWT_VERSION}/newt_linux_arm32; \
+        DOWNLOAD_URL="https://github.com/fosrl/newt/releases/download/${NEWT_VERSION}/newt_linux_arm32"; \
+        EXPECTED_SHA="${NEWT_SHA256_ARM32}"; \
     elif [ "$ARCH" = "armv6l" ]; then \
-        curl -fsSL -o /usr/bin/newt https://github.com/fosrl/newt/releases/download/${NEWT_VERSION}/newt_linux_arm32v6; \
+        DOWNLOAD_URL="https://github.com/fosrl/newt/releases/download/${NEWT_VERSION}/newt_linux_arm32v6"; \
+        EXPECTED_SHA="${NEWT_SHA256_ARM32V6}"; \
     elif [ "$ARCH" = "riscv64" ]; then \
-        curl -fsSL -o /usr/bin/newt https://github.com/fosrl/newt/releases/download/${NEWT_VERSION}/newt_linux_riscv64; \
+        DOWNLOAD_URL="https://github.com/fosrl/newt/releases/download/${NEWT_VERSION}/newt_linux_riscv64"; \
+        EXPECTED_SHA="${NEWT_SHA256_RISCV64}"; \
     else \
         echo "❌ ERROR: Unsupported architecture: $ARCH"; exit 1; \
     fi && \
-    chmod +x /usr/bin/newt
+    curl --proto '=https' --tlsv1.2 --retry 3 --retry-delay 2 --fail --silent --show-error -L -o /usr/bin/newt "$DOWNLOAD_URL" && \
+    if [ -n "$EXPECTED_SHA" ]; then \
+        echo "${EXPECTED_SHA}  /usr/bin/newt" | sha256sum -c -; \
+    else \
+        echo "⚠️ WARNING: No SHA256 provided for $ARCH; skipping checksum verification"; \
+    fi && \
+    chmod +x /usr/bin/newt && \
+    apk del .build-deps
 
 # Copy and prepare run script
 COPY run.sh /run.sh
