@@ -1,5 +1,8 @@
 # Changelog
 
+## 🔹 Version 1.10.3-beta5 - (17.03.2026)
+- Fixed AppArmor profile to allow /usr/bin/jq execution required by run.sh
+
 ## 🔹 Version 1.10.3-beta4 - (17.03.2026)
 - Fixed AppArmor profile to allow /usr/bin/env and bash interpreter execution used by run.sh
 
