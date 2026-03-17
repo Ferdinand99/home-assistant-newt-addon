@@ -28,19 +28,6 @@ The **Beta branch** contains the newest fixes and hardening updates before they 
 - Security improvements are tested here first.
 - You may see faster update cadence than the stable branch.
 
-### How to install the Beta branch
-When adding the repository in Home Assistant, append `#beta` to the URL:
-
-```text
-https://github.com/Ferdinand99/home-assistant-newt-addon#beta
-```
-
-or
-
-```text
-https://git.opland.net/Ferdinand99/home-assistant-newt-addon#beta
-```
-
 If your host does not support AppArmor, use the stable branch instead.
 
 ---
