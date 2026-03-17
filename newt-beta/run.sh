@@ -80,8 +80,8 @@ while true; do
 
     echo "🔹 Starting Newt..."
 
-    # Remove stale health file before starting
-    rm -f "$HEALTH_FILE"
+    # Ensure health file exists so Newt can rotate it without noisy ENOENT logs.
+    : > "$HEALTH_FILE"
 
     /usr/bin/newt &
     NEWT_PID=$!

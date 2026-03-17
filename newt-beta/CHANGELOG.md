@@ -1,5 +1,8 @@
 # Changelog
 
+## 🔹 Version 1.10.3-beta9 - (17.03.2026)
+- Reduced startup log noise by pre-creating HEALTH_FILE before launching Newt
+
 ## 🔹 Version 1.10.3-beta8 - (17.03.2026)
 - Set HOME and XDG_CONFIG_HOME to /data paths so Newt no longer attempts to write under /root/.config
 - Updated AppArmor profile to allow Newt config persistence under /data
