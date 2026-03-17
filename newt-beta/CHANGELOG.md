@@ -1,5 +1,8 @@
 # Changelog
 
+## 🔹 Version 1.10.3-beta3 - (17.03.2026)
+- Testing to see if AppArmor works
+
 ## 🔹 Version 1.10.3-beta2 - (17.03.2026)
 - Removed full_access to reduce privileged host exposure and improve add-on security posture
 - Disabled hassio_api access since it is not required by the runtime script
