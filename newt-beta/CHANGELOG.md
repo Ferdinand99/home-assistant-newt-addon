@@ -1,5 +1,8 @@
 # Changelog
 
+## 🔹 Version 1.10.3-beta7 - (17.03.2026)
+- Fixed AppArmor profile to allow /bin/busybox execution used by /bin/rm on Alpine-based images
+
 ## 🔹 Version 1.10.3-beta6 - (17.03.2026)
 - Fixed AppArmor profile to allow /bin/rm execution required by health file cleanup in run.sh
 
