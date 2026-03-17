@@ -15,6 +15,33 @@ This Home Assistant add-on allows you to easily run **Newt** from [Fossorial](ht
 ✅ Automated setup and execution of the Newt container
 ✅ Supports `amd64`, `armv7`, `armhf`, and `aarch64` architectures
 ✅ Automatic restart on crash
+✅ Beta branch with AppArmor enabled by default
+
+---
+
+## 🧪 Beta Branch
+
+The **Beta branch** contains the newest fixes and hardening updates before they are promoted to stable.
+
+### What is different in Beta?
+- AppArmor support is included and **enabled by default**.
+- Security improvements are tested here first.
+- You may see faster update cadence than the stable branch.
+
+### How to install the Beta branch
+When adding the repository in Home Assistant, append `#beta` to the URL:
+
+```text
+https://github.com/Ferdinand99/home-assistant-newt-addon#beta
+```
+
+or
+
+```text
+https://git.opland.net/Ferdinand99/home-assistant-newt-addon#beta
+```
+
+If your host does not support AppArmor, use the stable branch instead.
 
 ---
 
@@ -31,7 +58,7 @@ Issues can be postet on our community discord! [Discord](https://discord.gg/fTHY
 ### **1️⃣ Add the GitHub Repository as an Add-on Source**
 1. Go to **Settings → Add-ons → Add-on Store**.
 2. Click the menu (three dots in the top right) and select **Repositories**.
-3. Add the following URL:
+3. Add the following URL for the **stable** branch:
    ```
    https://github.com/Ferdinand99/home-assistant-newt-addon
    ```
@@ -39,6 +66,14 @@ Issues can be postet on our community discord! [Discord](https://discord.gg/fTHY
    ```
    https://git.opland.net/Ferdinand99/home-assistant-newt-addon
    ```
+4. For the **beta** branch, append `#beta`:
+  ```
+  https://github.com/Ferdinand99/home-assistant-newt-addon#beta
+  ```
+  or
+  ```
+  https://git.opland.net/Ferdinand99/home-assistant-newt-addon#beta
+  ```
 5. Click **Add** and wait for the repository to load.
 
 ### **2️⃣ Install and Start the Add-on**
