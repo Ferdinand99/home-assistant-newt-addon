@@ -1,5 +1,8 @@
 # Changelog
 
+## 🔹 Version 1.10.4-beta1 - (29.03.2026)
+- Updated newt version to 1.10.4 (https://github.com/fosrl/newt/releases/tag/1.10.4)
+
 ## 🔹 Version 1.10.3-beta9 - (17.03.2026)
 - Reduced startup log noise by pre-creating HEALTH_FILE before launching Newt
 
