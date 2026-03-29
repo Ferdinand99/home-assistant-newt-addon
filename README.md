@@ -7,6 +7,14 @@
 
 ---
 
+## 📢 News
+
+The **beta** branch receives the latest releases from the Pangolin team on the same day they are published, or shortly after.
+
+The **stable** branch will receive the update after a 7-day observation period, provided the release is confirmed to be stable in the beta branch.
+
+---
+
 ## 📌 About this Add-on
 This Home Assistant add-on allows you to easily run **Newt** from [Fossorial](https://docs.fossorial.io/Newt/overview) directly in Home Assistant. The add-on lets you configure **PANGOLIN_ENDPOINT**, **NEWT_ID**, and **NEWT_SECRET** via the Home Assistant interface.
 
