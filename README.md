@@ -11,7 +11,7 @@
 
 The **beta** branch receives the latest releases from the Pangolin team on the same day they are published, or shortly after.
 
-The **stable** branch will receive the update after a 7-day observation period, provided the release is confirmed to be stable in the beta branch.
+The **stable** branch will receive the update after a 5 to 7-day observation period, provided the release is confirmed to be stable in the beta branch.
 
 ---
 
