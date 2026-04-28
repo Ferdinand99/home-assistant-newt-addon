@@ -1,5 +1,5 @@
 name: "Newt Add-on (Beta)"
-version: "1.11.0-beta1"
+version: "1.12.0-beta1"
 slug: "newt-beta"
 description: "Newt beta release of Newt client for testing new features"
 icon: "icon.png"
