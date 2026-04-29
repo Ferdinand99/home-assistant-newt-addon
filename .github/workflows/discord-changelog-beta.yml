@@ -45,7 +45,7 @@ jobs:
         shell: bash
         run: |
           # Vi bruker en variabel for meldingen for å holde curl-kommandoen ren
-          MSG_CONTENT="<@&$ROLE_ID> Ny beta-oppdatering er klar! 🚀"
+          MSG_CONTENT="<@&$ROLE_ID> New beta-update is ready! 🚀"
           
           curl -H "Content-Type: application/json" \
           -X POST \
