@@ -4,29 +4,43 @@ FROM ghcr.io/hassio-addons/base:14.0.0
 # Define the Newt version
 ARG NEWT_VERSION=1.11.0
 ENV NEWT_VERSION=${NEWT_VERSION}
+ARG NEWT_SHA256_AMD64=""
+ARG NEWT_SHA256_ARM64=""
+ARG NEWT_SHA256_ARM32=""
+ARG NEWT_SHA256_ARM32V6=""
+ARG NEWT_SHA256_RISCV64=""
 
 # Enable Newt health file
 ENV HEALTH_FILE=/tmp/healthy
 
-# Install dependencies
-RUN apk add --no-cache bash curl jq
+# Install runtime dependencies and temporary build tooling
+RUN apk add --no-cache bash jq && apk add --no-cache --virtual .build-deps curl
 
-# Detect system architecture and download the correct Newt binary
-RUN ARCH=$(uname -m) && \
-    if [ "$ARCH" = "x86_64" ]; then \
-        curl -fsSL -o /usr/bin/newt https://github.com/fosrl/newt/releases/download/${NEWT_VERSION}/newt_linux_amd64; \
-    elif [ "$ARCH" = "aarch64" ]; then \
-        curl -fsSL -o /usr/bin/newt https://github.com/fosrl/newt/releases/download/${NEWT_VERSION}/newt_linux_arm64; \
-    elif [ "$ARCH" = "armv7l" ]; then \
-        curl -fsSL -o /usr/bin/newt https://github.com/fosrl/newt/releases/download/${NEWT_VERSION}/newt_linux_arm32; \
-    elif [ "$ARCH" = "armv6l" ]; then \
-        curl -fsSL -o /usr/bin/newt https://github.com/fosrl/newt/releases/download/${NEWT_VERSION}/newt_linux_arm32v6; \
-    elif [ "$ARCH" = "riscv64" ]; then \
-        curl -fsSL -o /usr/bin/newt https://github.com/fosrl/newt/releases/download/${NEWT_VERSION}/newt_linux_riscv64; \
+# Bruk Home Assistants innebygde BUILD_ARCH for sikker arkitekturdeteksjon
+ARG BUILD_ARCH
+RUN \
+    if [ "${BUILD_ARCH}" = "amd64" ]; then \
+        DOWNLOAD_URL="https://github.com/fosrl/newt/releases/download/${NEWT_VERSION}/newt_linux_amd64"; \
+        EXPECTED_SHA="${NEWT_SHA256_AMD64}"; \
+    elif [ "${BUILD_ARCH}" = "aarch64" ]; then \
+        DOWNLOAD_URL="https://github.com/fosrl/newt/releases/download/${NEWT_VERSION}/newt_linux_arm64"; \
+        EXPECTED_SHA="${NEWT_SHA256_ARM64}"; \
+    elif [ "${BUILD_ARCH}" = "armv7" ] || [ "${BUILD_ARCH}" = "armhf" ]; then \
+        DOWNLOAD_URL="https://github.com/fosrl/newt/releases/download/${NEWT_VERSION}/newt_linux_arm32"; \
+        EXPECTED_SHA="${NEWT_SHA256_ARM32}"; \
     else \
-        echo "❌ ERROR: Unsupported architecture: $ARCH"; exit 1; \
+        echo "❌ ERROR: Unsupported Home Assistant architecture: ${BUILD_ARCH}"; exit 1; \
     fi && \
-    chmod +x /usr/bin/newt
+    echo "🔹 Downloading Newt for ${BUILD_ARCH} from ${DOWNLOAD_URL}..." && \
+    curl --ipv4 --proto '=https' --tlsv1.2 --retry 3 --retry-delay 2 --fail --silent --show-error -L -o /usr/bin/newt "$DOWNLOAD_URL" && \
+    if [ -n "$EXPECTED_SHA" ]; then \
+        # Viktig: Nøyaktig to standard mellomrom mellom hash og filbane
+        echo "${EXPECTED_SHA}  /usr/bin/newt" | sha256sum -c -; \
+    else \
+        echo "⚠️ WARNING: No SHA256 provided for ${BUILD_ARCH}; skipping checksum verification"; \
+    fi && \
+    chmod +x /usr/bin/newt && \
+    apk del .build-deps
 
 # Copy and prepare run script
 COPY run.sh /run.sh
