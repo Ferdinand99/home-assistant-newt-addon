@@ -19,6 +19,7 @@ jobs:
         id: changelog
         shell: bash
         run: |
+          # Henter siste versjonsblokk fra CHANGELOG.md[cite: 2]
           changelog_block=$(awk '
             BEGIN { found=0 }
             /^## 🔹 Version / {
@@ -33,18 +34,24 @@ jobs:
             }
           ' newt-beta/CHANGELOG.md)
 
+          # Sikker escaping for JSON-format
           changelog_block=$(echo "$changelog_block" | sed 's/"/\\"/g' | sed ':a;N;$!ba;s/\n/\\n/g')
           echo "BLOCK=$changelog_block" >> "$GITHUB_OUTPUT"
 
       - name: Send to Discord
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_CHANGELOG_WEBHOOK_BETA }}
+          ROLE_ID: "1374737922980581436"
         shell: bash
         run: |
+          # Vi bruker en variabel for meldingen for å holde curl-kommandoen ren
+          MSG_CONTENT="<@&$ROLE_ID> Ny beta-oppdatering er klar! 🚀"
+          
           curl -H "Content-Type: application/json" \
           -X POST \
           -d "{
             \"username\": \"Newt Beta Changelog Bot\",
+            \"content\": \"$MSG_CONTENT\",
             \"embeds\": [{
               \"title\": \"🧪 Beta Changelog Update\",
               \"description\": \"${{ steps.changelog.outputs.BLOCK }}\",
