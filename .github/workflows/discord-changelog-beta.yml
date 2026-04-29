@@ -41,7 +41,7 @@ jobs:
       - name: Send to Discord
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_CHANGELOG_WEBHOOK_BETA }}
-          ROLE_ID: "1374737922980581436"
+          ROLE_ID: "1498952905334587443"
         shell: bash
         run: |
           # Vi bruker en variabel for meldingen for å holde curl-kommandoen ren
