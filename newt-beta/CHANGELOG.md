@@ -1,5 +1,7 @@
 # Changelog
 
+## 🔹 Version 1.12.2-beta2 - (29.04.2026)
+
 ## 🔹 Version 1.12.2-beta1 - (29.04.2026)
 - Updated newt version to 1.12.2 (https://github.com/fosrl/newt/releases/tag/1.12.2)
 
