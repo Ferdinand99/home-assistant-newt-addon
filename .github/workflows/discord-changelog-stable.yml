@@ -19,6 +19,7 @@ jobs:
         id: changelog
         shell: bash
         run: |
+          # Henter siste versjonsblokk fra den stabile changelogen
           changelog_block=$(awk '
             BEGIN { found=0 }
             /^## 🔹 Version / {
@@ -33,22 +34,28 @@ jobs:
             }
           ' newt/CHANGELOG.md)
 
+          # Escaper gåseøyne og linjeskift for å unngå JSON-feil
           changelog_block=$(echo "$changelog_block" | sed 's/"/\\"/g' | sed ':a;N;$!ba;s/\n/\\n/g')
           echo "BLOCK=$changelog_block" >> "$GITHUB_OUTPUT"
 
       - name: Send to Discord
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_CHANGELOG_WEBHOOK }}
+          ROLE_ID: "1374737922980581436"
         shell: bash
         run: |
+          # Meldingen som sendes utenfor selve embed-boksen for å trigge pingen
+          MSG_CONTENT="<@&$ROLE_ID> En ny stabil versjon av Newt er ute! 🚀"
+          
           curl -H "Content-Type: application/json" \
           -X POST \
           -d "{
             \"username\": \"Newt Changelog Bot\",
+            \"content\": \"$MSG_CONTENT\",
             \"embeds\": [{
               \"title\": \"📦 Stable Changelog Update\",
               \"description\": \"${{ steps.changelog.outputs.BLOCK }}\",
-              \"color\": 7506394
+              \"color\": 3066993
             }]
           }" \
           "$DISCORD_WEBHOOK"
