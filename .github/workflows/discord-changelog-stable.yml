@@ -45,7 +45,7 @@ jobs:
         shell: bash
         run: |
           # Meldingen som sendes utenfor selve embed-boksen for å trigge pingen
-          MSG_CONTENT="<@&$ROLE_ID> En ny stabil versjon av Newt er ute! 🚀"
+          MSG_CONTENT="<@&$ROLE_ID> A new Stable update of Newt is ready! 🚀"
           
           curl -H "Content-Type: application/json" \
           -X POST \
