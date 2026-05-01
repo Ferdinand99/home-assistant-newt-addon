@@ -1,5 +1,8 @@
 # Changelog
 
+## 🔹 Version 1.12.3-beta1 - (01.05.2026)
+- Bumped newt version to 1.12.3
+
 ## 🔹 Version 1.12.2-beta2 - (29.04.2026)
 - Fixed an issue where the add-on would download the wrong architecture binary during cross-compilation by implementing Home Assistant's native `BUILD_ARCH` variable
 - Fixed build crashes caused by GitHub DNS resolution timeouts in Alpine Linux (`Could not resolve host: github.com`)
