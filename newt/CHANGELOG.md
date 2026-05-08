@@ -1,5 +1,8 @@
 # Changelog
 
+## 🔹 Version 1.12.3-stable1 - (08.05.2026)
+- Bumped newt to v.1.12.3 after stable beta
+
 ## 🔹 Version 1.11.0-stable2 - (29.04.2026)
 - Updated Dockerfile to use BUILD_ARCH for architecture detection and added SHA256 checks for downloaded binaries.
 
