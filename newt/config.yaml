@@ -1,5 +1,5 @@
 name: "Newt Add-on"
-version: "1.12.3-stable1"
+version: "1.12.5-stable1"
 slug: "newt"
 description: "Newt client for Home Assistant with Pangolin connectivity"
 icon: "icon.png"
