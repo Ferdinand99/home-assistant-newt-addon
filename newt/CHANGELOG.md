@@ -1,5 +1,8 @@
 # Changelog
 
+## 🔹 Version 1.13.0-stable1 - (27.06.2026)
+- Bumped newt to v.1.13.0 after stable beta
+
 ## 🔹 Version 1.12.5-stable1 - (14.05.2026)
 - Bumped newt to v.1.12.5 after stable beta
 
