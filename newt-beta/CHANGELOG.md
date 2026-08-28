@@ -1,5 +1,13 @@
 # Changelog
 
+## 🔹 Version 1.16.0-beta2 - (28.08.2026)
+- Fixed health reporting: removed the shell watchdog that kept overwriting Newt's own health file, so the add-on now reports unhealthy when the tunnel is actually down
+- Fixed armhf builds to download the ARMv6 binary instead of the ARMv7 one
+- SHA256 checksums are now pinned and verified; builds fail instead of silently skipping verification
+- Blocked PATH, HOME, LD_*, HEALTH_FILE and the configured credentials from being overridden via custom_env_vars
+- Shutdown is no longer delayed by up to 5 seconds during the reconnect pause
+- AppArmor: allow /dev/net/tun for native WireGuard interface mode
+
 ## 🔹 Version 1.16.0-beta1 - (26.08.2026)
 - Bumped newt to 1.16.0
 

@@ -1,7 +1,8 @@
 name: "Newt Add-on (Beta)"
-version: "1.16.0-beta1"
+version: "1.16.0-beta2"
 slug: "newt-beta"
 description: "Newt beta release of Newt client for testing new features"
+url: "https://github.com/Ferdinand99/home-assistant-newt-addon"
 icon: "icon.png"
 arch:
   - amd64

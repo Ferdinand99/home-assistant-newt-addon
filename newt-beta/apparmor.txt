@@ -1,7 +1,15 @@
 # Home Assistant Add-on AppArmor profile for Newt
-# Compatibility note:
-# Keep config.yaml apparmor disabled by default for hosts without AppArmor support.
-# This profile can be enabled by setting apparmor: true in config.yaml on supported hosts.
+#
+# This profile is enabled by default in the beta channel (apparmor: true in config.yaml).
+# The stable channel keeps apparmor disabled for hosts without AppArmor support.
+#
+# The profile name below does not have to match the add-on slug: Supervisor rewrites
+# it to the slug via adjust_profile() before loading, so leave it as-is.
+#
+# Scope note: this profile targets Newt's default userspace (netstack) WireGuard mode.
+# The native-interface modes (USE_NATIVE_INTERFACE / USE_NATIVE_MAIN_INTERFACE, and
+# client mode) additionally need netlink and sysctl writes under /proc/sys/net, which
+# are deliberately denied below. Use the stable channel if you need those modes.
 
 #include <tunables/global>
 
@@ -33,6 +41,9 @@ profile hassio-addons-newt flags=(attach_disconnected,mediate_deleted) {
 
   # Health file and transient runtime files.
   /tmp/** rw,
+
+  # TUN device, needed if a native WireGuard interface is used instead of netstack.
+  /dev/net/tun rw,
 
   # Deny dangerous kernel/module operations.
   deny capability sys_admin,
