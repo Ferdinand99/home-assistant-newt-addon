@@ -53,7 +53,7 @@ Issues can be postet on our community discord! [Discord](https://discord.gg/fTHY
 ### **1️⃣ Add the GitHub Repository as an Add-on Source**
 1. Go to **Settings → Add-ons → Add-on Store**.
 2. Click the menu (three dots in the top right) and select **Repositories**.
-3. Add the following URL for the **stable** branch:
+3. Add the following URL:
    ```
    https://github.com/Ferdinand99/home-assistant-newt-addon
    ```
@@ -61,18 +61,12 @@ Issues can be postet on our community discord! [Discord](https://discord.gg/fTHY
    ```
    https://git.opland.net/Ferdinand99/home-assistant-newt-addon
    ```
-4. For the **beta** branch, append `#beta`:
-  ```
-  https://github.com/Ferdinand99/home-assistant-newt-addon#beta
-  ```
-  or
-  ```
-  https://git.opland.net/Ferdinand99/home-assistant-newt-addon#beta
-  ```
-5. Click **Add** and wait for the repository to load.
+4. Click **Add** and wait for the repository to load. Both add-ons are published from this
+   same repository, so you only need to add it once — **Newt Add-on** (stable) and
+   **Newt Add-on (Beta)** will both appear in the store list.
 
 ### **2️⃣ Install and Start the Add-on**
-1. Find **Newt Add-on** in the list and click **Install**.
+1. Find **Newt Add-on** (stable) or **Newt Add-on (Beta)** in the list and click **Install**.
 2. Go to the **Configuration** tab and enter your values for:
    - **PANGOLIN_ENDPOINT** (e.g., `https://example.com`)
    - **NEWT_ID**
