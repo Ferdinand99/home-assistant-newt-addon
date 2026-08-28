@@ -19,7 +19,7 @@ jobs:
         id: changelog
         shell: bash
         run: |
-          # Henter siste versjonsblokk fra CHANGELOG.md[cite: 2]
+          # Extract the latest version block from CHANGELOG.md
           changelog_block=$(awk '
             BEGIN { found=0 }
             /^## 🔹 Version / {
@@ -34,7 +34,7 @@ jobs:
             }
           ' newt-beta/CHANGELOG.md)
 
-          # Sikker escaping for JSON-format
+          # Safe escaping for JSON format
           changelog_block=$(echo "$changelog_block" | sed 's/"/\\"/g' | sed ':a;N;$!ba;s/\n/\\n/g')
           echo "BLOCK=$changelog_block" >> "$GITHUB_OUTPUT"
 
@@ -44,7 +44,7 @@ jobs:
           ROLE_ID: "1498952905334587443"
         shell: bash
         run: |
-          # Vi bruker en variabel for meldingen for å holde curl-kommandoen ren
+          # We use a variable for the message to keep the curl command clean
           MSG_CONTENT="<@&$ROLE_ID> New beta-update is ready! 🚀"
           
           curl -H "Content-Type: application/json" \

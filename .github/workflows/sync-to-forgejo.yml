@@ -13,7 +13,7 @@ jobs:
       - name: Checkout GitHub repo
         uses: actions/checkout@v3
         with:
-          fetch-depth: 0  # Henter hele repoet, ikke bare siste commit
+          fetch-depth: 0  # Fetch the whole repo, not just the latest commit
 
       - name: Configure Git
         run: |

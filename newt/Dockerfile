@@ -16,7 +16,7 @@ ENV HEALTH_FILE=/tmp/healthy
 # Install runtime dependencies and temporary build tooling
 RUN apk add --no-cache bash jq && apk add --no-cache --virtual .build-deps curl
 
-# Bruk Home Assistants innebygde BUILD_ARCH for sikker arkitekturdeteksjon
+# Use Home Assistant's built-in BUILD_ARCH for safe architecture detection
 ARG BUILD_ARCH
 RUN \
     if [ "${BUILD_ARCH}" = "amd64" ]; then \
@@ -34,7 +34,7 @@ RUN \
     echo "🔹 Downloading Newt for ${BUILD_ARCH} from ${DOWNLOAD_URL}..." && \
     curl --ipv4 --proto '=https' --tlsv1.2 --retry 3 --retry-delay 2 --fail --silent --show-error -L -o /usr/bin/newt "$DOWNLOAD_URL" && \
     if [ -n "$EXPECTED_SHA" ]; then \
-        # Viktig: Nøyaktig to standard mellomrom mellom hash og filbane
+        # Important: exactly two regular spaces between the hash and the file path
         echo "${EXPECTED_SHA}  /usr/bin/newt" | sha256sum -c -; \
     else \
         echo "⚠️ WARNING: No SHA256 provided for ${BUILD_ARCH}; skipping checksum verification"; \

@@ -90,11 +90,11 @@ while true; do
 
     echo "🔹 Starting Newt..."
 
-    # Fjern helsefilen før oppstart. Newt oppretter den selv når tunnelen er oppe,
-    # og fjerner den igjen hvis forbindelsen mistes (se HEALTH_FILE i Newt).
+    # Remove the health file before startup. Newt creates it itself once the tunnel
+    # is up, and removes it again if the connection is lost (see HEALTH_FILE in Newt).
     rm -f "$HEALTH_FILE"
 
-    # Start Newt i bakgrunnen
+    # Start Newt in the background
     /usr/bin/newt &
     NEWT_PID=$!
 
@@ -104,7 +104,7 @@ while true; do
     set -e
     
     NEWT_PID=""
-    rm -f "$HEALTH_FILE" # Sørg for at filen er borte når Newt dør, slik at containeren blir merket "unhealthy"
+    rm -f "$HEALTH_FILE" # Ensure the file is gone when Newt dies, so the container gets marked "unhealthy"
 
     if [[ "$STOP_REQUESTED" -eq 1 ]]; then
         echo "🔹 Newt stopped due to shutdown signal"
@@ -112,8 +112,8 @@ while true; do
     fi
 
     echo "⚠️ Newt stopped with exit code ${NEWT_EXIT_CODE}! Waiting 5 seconds before reconnecting..."
-    # Bakgrunns-sleep + wait, slik at et SIGTERM under pausen kjører trap-en umiddelbart
-    # i stedet for å bli liggende til sleep er ferdig.
+    # Background sleep + wait, so a SIGTERM during the pause runs the trap immediately
+    # instead of being stuck until sleep finishes.
     sleep 5 &
     wait $! 2>/dev/null || true
 done

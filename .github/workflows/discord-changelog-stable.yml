@@ -19,7 +19,7 @@ jobs:
         id: changelog
         shell: bash
         run: |
-          # Henter siste versjonsblokk fra den stabile changelogen
+          # Extract the latest version block from the stable changelog
           changelog_block=$(awk '
             BEGIN { found=0 }
             /^## 🔹 Version / {
@@ -34,7 +34,7 @@ jobs:
             }
           ' newt/CHANGELOG.md)
 
-          # Escaper gåseøyne og linjeskift for å unngå JSON-feil
+          # Escape quotes and newlines to avoid JSON errors
           changelog_block=$(echo "$changelog_block" | sed 's/"/\\"/g' | sed ':a;N;$!ba;s/\n/\\n/g')
           echo "BLOCK=$changelog_block" >> "$GITHUB_OUTPUT"
 
@@ -44,7 +44,7 @@ jobs:
           ROLE_ID: "1374737922980581436"
         shell: bash
         run: |
-          # Meldingen som sendes utenfor selve embed-boksen for å trigge pingen
+          # The message is sent outside the embed itself to trigger the ping
           MSG_CONTENT="<@&$ROLE_ID> A new Stable update of Newt is ready! 🚀"
           
           curl -H "Content-Type: application/json" \
