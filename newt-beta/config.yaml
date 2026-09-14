@@ -4,6 +4,7 @@ slug: "newt-beta"
 description: "Newt beta release of Newt client for testing new features"
 url: "https://github.com/Ferdinand99/home-assistant-newt-addon"
 icon: "icon.png"
+stage: "experimental"
 arch:
   - amd64
   - aarch64
