@@ -1,5 +1,8 @@
 # Changelog
 
+## 🔹 Version 1.17.0-beta1 - (16.09.2026)
+- Bumped newt to 1.17.0
+
 ## 🔹 Version 1.16.0-beta2 - (28.08.2026)
 - Fixed health reporting: removed the shell watchdog that kept overwriting Newt's own health file, so the add-on now reports unhealthy when the tunnel is actually down
 - Fixed armhf builds to download the ARMv6 binary instead of the ARMv7 one
