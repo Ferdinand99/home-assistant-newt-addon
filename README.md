@@ -13,6 +13,8 @@ The **beta** branch receives the latest releases from the Pangolin team on the s
 
 The **stable** branch will receive the update after a 5 to 7-day observation period, provided the release is confirmed to be stable in the beta branch.
 
+Workflow is set up to **auto** push a PR to the beta when fosrl pushes an update to newt 
+
 ---
 
 ## 📌 About this Add-on
@@ -34,7 +36,7 @@ The **Beta branch** contains the newest fixes and hardening updates before they 
 ### What is different in Beta?
 - AppArmor support is included and **enabled by default**.
 - Security improvements are tested here first.
-- You may see faster update cadence than the stable branch.
+- You may see faster update cadence than the stable branch. 
 
 If your host does not support AppArmor, use the stable branch instead.
 
