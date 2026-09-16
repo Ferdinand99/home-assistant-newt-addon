@@ -1,0 +1,145 @@
+name: Promote Newt version (stable)
+
+# After a Newt version has been running on beta for at least the repo's
+# observation window (see README: 5-7 days), opens a PR bumping just
+# NEWT_VERSION + SHA256 checksums in newt/ (stable) to match. Any other
+# beta-only hardening or features are still promoted by hand, on purpose —
+# this only automates the routine "new upstream Newt release" cycle.
+
+on:
+  schedule:
+    - cron: "37 7 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+env:
+  OBSERVATION_DAYS: 5
+
+jobs:
+  promote-newt-stable:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Get versions pinned in beta and stable
+        id: versions
+        run: |
+          BETA=$(grep -oP '^ARG NEWT_VERSION=\K.*' newt-beta/Dockerfile)
+          STABLE=$(grep -oP '^ARG NEWT_VERSION=\K.*' newt/Dockerfile)
+          echo "beta=${BETA}" >> "$GITHUB_OUTPUT"
+          echo "stable=${STABLE}" >> "$GITHUB_OUTPUT"
+
+      - name: Check if stable is already on the beta version
+        id: uptodate
+        run: |
+          if [ "${{ steps.versions.outputs.beta }}" = "${{ steps.versions.outputs.stable }}" ]; then
+            echo "uptodate=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "uptodate=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Find when beta was bumped to this version, and check observation window
+        id: bumpdate
+        if: steps.uptodate.outputs.uptodate == 'false'
+        run: |
+          BETA="${{ steps.versions.outputs.beta }}"
+          LINE=$(grep -m1 -P "^## .* Version ${BETA}-beta1 - " newt-beta/CHANGELOG.md || true)
+          if [ -z "$LINE" ]; then
+            echo "::warning::No '${BETA}-beta1' changelog entry found in newt-beta/CHANGELOG.md; can't determine when the observation window started, skipping for now."
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          DATE=$(echo "$LINE" | grep -oP '\(\K[0-9]{2}\.[0-9]{2}\.[0-9]{4}(?=\))')
+          DAY="${DATE%%.*}"
+          REST="${DATE#*.}"
+          MONTH="${REST%%.*}"
+          YEAR="${REST#*.}"
+          BUMP_EPOCH=$(date -d "${YEAR}-${MONTH}-${DAY}" +%s)
+          NOW_EPOCH=$(date -u +%s)
+          DAYS_ELAPSED=$(( (NOW_EPOCH - BUMP_EPOCH) / 86400 ))
+          echo "Beta was bumped to ${BETA} on ${DATE} (${DAYS_ELAPSED} days ago)"
+
+          if [ "$DAYS_ELAPSED" -ge "$OBSERVATION_DAYS" ]; then
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::Only ${DAYS_ELAPSED} of ${OBSERVATION_DAYS} observation days elapsed for ${BETA}; not promoting yet."
+          fi
+
+      - name: Fetch SHA256 checksums for this release
+        if: steps.bumpdate.outputs.ready == 'true'
+        id: sha
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          BETA="${{ steps.versions.outputs.beta }}"
+          curl -sL --fail \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/fosrl/newt/releases/tags/${BETA}" \
+            -o /tmp/release.json
+          for pair in "amd64:amd64" "arm64:arm64" "arm32:arm32" "arm32v6:arm32v6"; do
+            asset="${pair%%:*}"
+            key="${pair##*:}"
+            digest=$(jq -r --arg name "newt_linux_${asset}" \
+              '.assets[] | select(.name == $name) | .digest' /tmp/release.json)
+            if [ -z "${digest}" ] || [ "${digest}" = "null" ]; then
+              echo "::error::No digest found for newt_linux_${asset} in release ${BETA}"
+              exit 1
+            fi
+            echo "${key}=${digest#sha256:}" >> "$GITHUB_OUTPUT"
+          done
+
+      - name: Update newt/Dockerfile
+        if: steps.bumpdate.outputs.ready == 'true'
+        run: |
+          NEW="${{ steps.versions.outputs.beta }}"
+          sed -i "s/^ARG NEWT_VERSION=.*/ARG NEWT_VERSION=${NEW}/" newt/Dockerfile
+          sed -i "s/^ARG NEWT_SHA256_AMD64=.*/ARG NEWT_SHA256_AMD64=\"${{ steps.sha.outputs.amd64 }}\"/" newt/Dockerfile
+          sed -i "s/^ARG NEWT_SHA256_ARM64=.*/ARG NEWT_SHA256_ARM64=\"${{ steps.sha.outputs.arm64 }}\"/" newt/Dockerfile
+          sed -i "s/^ARG NEWT_SHA256_ARM32=.*/ARG NEWT_SHA256_ARM32=\"${{ steps.sha.outputs.arm32 }}\"/" newt/Dockerfile
+          sed -i "s/^ARG NEWT_SHA256_ARM32V6=.*/ARG NEWT_SHA256_ARM32V6=\"${{ steps.sha.outputs.arm32v6 }}\"/" newt/Dockerfile
+
+      - name: Bump newt/config.yaml version
+        if: steps.bumpdate.outputs.ready == 'true'
+        id: configversion
+        run: |
+          NEW_CONFIG_VERSION="${{ steps.versions.outputs.beta }}-stable1"
+          sed -i "s/^version: \".*\"/version: \"${NEW_CONFIG_VERSION}\"/" newt/config.yaml
+          echo "version=${NEW_CONFIG_VERSION}" >> "$GITHUB_OUTPUT"
+
+      - name: Add CHANGELOG.md entry
+        if: steps.bumpdate.outputs.ready == 'true'
+        run: |
+          DATE=$(date +"%d.%m.%Y")
+          cat > /tmp/entry.txt <<EOF
+          ## 🔹 Version ${{ steps.configversion.outputs.version }} - (${DATE})
+          - Bumped newt to v.${{ steps.versions.outputs.beta }} after stable beta
+
+          EOF
+          sed -i '2r /tmp/entry.txt' newt/CHANGELOG.md
+
+      - name: Open pull request
+        if: steps.bumpdate.outputs.ready == 'true'
+        uses: peter-evans/create-pull-request@v8
+        with:
+          branch: bot/newt-stable-${{ steps.versions.outputs.beta }}
+          title: "Promote Newt ${{ steps.versions.outputs.beta }} to stable"
+          commit-message: "Bump Newt to ${{ steps.versions.outputs.beta }} in newt (stable)"
+          labels: newt, dependencies
+          body: |
+            Newt `${{ steps.versions.outputs.beta }}` has been pinned on beta for at least
+            ${{ env.OBSERVATION_DAYS }} days. This PR promotes just the Newt version pin
+            (Dockerfile ARGs + config.yaml + CHANGELOG.md) to stable — any other beta-only
+            hardening or features are still promoted by hand.
+
+            - Release: https://github.com/fosrl/newt/releases/tag/${{ steps.versions.outputs.beta }}
+            - SHA256 checksums fetched from GitHub's release asset digests for this tag
+
+            Please review before merging.
