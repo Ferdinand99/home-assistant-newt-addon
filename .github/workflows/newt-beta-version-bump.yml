@@ -6,7 +6,7 @@ name: Bump Newt version (beta)
 
 on:
   schedule:
-    - cron: "17 6 * * *"
+    - cron: "17 6,18 * * *"
   workflow_dispatch:
 
 permissions:
