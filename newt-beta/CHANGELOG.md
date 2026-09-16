@@ -1,5 +1,8 @@
 # Changelog
 
+## 🔹 Version 1.17.0-beta3 - (16.09.2026)
+- Mask NEWT_SECRET in the configuration UI (schema type changed from `str` to `password`)
+
 ## 🔹 Version 1.17.0-beta2 - (16.09.2026)
 - Update SHA256 checksums in Dockerfile
 

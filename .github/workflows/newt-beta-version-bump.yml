@@ -1,0 +1,113 @@
+name: Bump Newt version (beta)
+
+# Watches fosrl/newt for new releases and opens a PR bumping NEWT_VERSION and
+# the pinned SHA256 checksums in newt-beta/ only. The stable channel (newt/)
+# is promoted manually once a bump has been observed on beta.
+
+on:
+  schedule:
+    - cron: "17 6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  bump-newt-beta:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Get version currently pinned in newt-beta
+        id: current
+        run: |
+          CURRENT=$(grep -oP '^ARG NEWT_VERSION=\K.*' newt-beta/Dockerfile)
+          echo "version=${CURRENT}" >> "$GITHUB_OUTPUT"
+
+      - name: Get latest fosrl/newt release
+        id: latest
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          curl -sL --fail \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/fosrl/newt/releases/latest" \
+            -o /tmp/release.json
+          TAG=$(jq -r '.tag_name' /tmp/release.json)
+          echo "version=${TAG}" >> "$GITHUB_OUTPUT"
+
+      - name: Check if an update is needed
+        id: check
+        run: |
+          if [ "${{ steps.current.outputs.version }}" = "${{ steps.latest.outputs.version }}" ]; then
+            echo "needed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "needed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Extract SHA256 checksums for our architectures
+        if: steps.check.outputs.needed == 'true'
+        id: sha
+        run: |
+          for pair in "amd64:amd64" "arm64:arm64" "arm32:arm32" "arm32v6:arm32v6"; do
+            asset="${pair%%:*}"
+            key="${pair##*:}"
+            digest=$(jq -r --arg name "newt_linux_${asset}" \
+              '.assets[] | select(.name == $name) | .digest' /tmp/release.json)
+            if [ -z "${digest}" ] || [ "${digest}" = "null" ]; then
+              echo "::error::No digest found for newt_linux_${asset} in release ${{ steps.latest.outputs.version }}"
+              exit 1
+            fi
+            echo "${key}=${digest#sha256:}" >> "$GITHUB_OUTPUT"
+          done
+
+      - name: Update newt-beta/Dockerfile
+        if: steps.check.outputs.needed == 'true'
+        run: |
+          NEW="${{ steps.latest.outputs.version }}"
+          sed -i "s/^ARG NEWT_VERSION=.*/ARG NEWT_VERSION=${NEW}/" newt-beta/Dockerfile
+          sed -i "s/^ARG NEWT_SHA256_AMD64=.*/ARG NEWT_SHA256_AMD64=\"${{ steps.sha.outputs.amd64 }}\"/" newt-beta/Dockerfile
+          sed -i "s/^ARG NEWT_SHA256_ARM64=.*/ARG NEWT_SHA256_ARM64=\"${{ steps.sha.outputs.arm64 }}\"/" newt-beta/Dockerfile
+          sed -i "s/^ARG NEWT_SHA256_ARM32=.*/ARG NEWT_SHA256_ARM32=\"${{ steps.sha.outputs.arm32 }}\"/" newt-beta/Dockerfile
+          sed -i "s/^ARG NEWT_SHA256_ARM32V6=.*/ARG NEWT_SHA256_ARM32V6=\"${{ steps.sha.outputs.arm32v6 }}\"/" newt-beta/Dockerfile
+
+      - name: Bump newt-beta/config.yaml version
+        if: steps.check.outputs.needed == 'true'
+        id: configversion
+        run: |
+          NEW_CONFIG_VERSION="${{ steps.latest.outputs.version }}-beta1"
+          sed -i "s/^version: \".*\"/version: \"${NEW_CONFIG_VERSION}\"/" newt-beta/config.yaml
+          echo "version=${NEW_CONFIG_VERSION}" >> "$GITHUB_OUTPUT"
+
+      - name: Add CHANGELOG.md entry
+        if: steps.check.outputs.needed == 'true'
+        run: |
+          DATE=$(date +"%d.%m.%Y")
+          cat > /tmp/entry.txt <<EOF
+          ## 🔹 Version ${{ steps.configversion.outputs.version }} - (${DATE})
+          - Bumped newt to ${{ steps.latest.outputs.version }}
+
+          EOF
+          sed -i '2r /tmp/entry.txt' newt-beta/CHANGELOG.md
+
+      - name: Open pull request
+        if: steps.check.outputs.needed == 'true'
+        uses: peter-evans/create-pull-request@v8
+        with:
+          branch: bot/newt-${{ steps.latest.outputs.version }}
+          title: "Bump Newt to ${{ steps.latest.outputs.version }} (beta)"
+          commit-message: "Bump Newt to ${{ steps.latest.outputs.version }} in newt-beta"
+          labels: newt-beta, dependencies
+          body: |
+            Automated bump of the Newt binary pinned in `newt-beta/`.
+
+            - Release: https://github.com/fosrl/newt/releases/tag/${{ steps.latest.outputs.version }}
+            - SHA256 checksums were fetched from GitHub's release asset digests for this tag
+            - Only `newt-beta/` is touched by this workflow — `newt/` (stable) is promoted
+              manually once this has been observed running on beta
+
+            Please review the checksums and the changelog wording before merging.

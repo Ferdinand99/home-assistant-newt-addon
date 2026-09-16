@@ -42,16 +42,10 @@ mkdir -p "$XDG_CONFIG_HOME"
 
 STOP_REQUESTED=0
 NEWT_PID=""
-WATCHDOG_PID=""
 
 handle_shutdown() {
     STOP_REQUESTED=1
     echo "🔹 Shutdown requested, stopping Newt..."
-    
-    # Kill the health watchdog if running
-    if [[ -n "$WATCHDOG_PID" ]] && kill -0 "$WATCHDOG_PID" 2>/dev/null; then
-        kill "$WATCHDOG_PID" 2>/dev/null || true
-    fi
 
     # Kill Newt
     if [[ -n "$NEWT_PID" ]] && kill -0 "$NEWT_PID" 2>/dev/null; then
@@ -72,6 +66,15 @@ if [[ -n "$CUSTOM_ENV_VARS" ]]; then
                 continue
             fi
             var_name="${env_var%%=*}"
+            # Protected variables: either they alter how this script and Newt are
+            # executed (PATH/HOME/LD_*), or they would silently override values that
+            # were already validated from the add-on configuration above.
+            case "$var_name" in
+                PATH|HOME|LD_*|HEALTH_FILE|PANGOLIN_ENDPOINT|NEWT_ID|NEWT_SECRET)
+                    echo "  ⚠️ Skipping protected variable: ${var_name}"
+                    continue
+                    ;;
+            esac
             echo "  ${var_name}=[REDACTED]"
             export "$env_var"
         fi
@@ -87,24 +90,13 @@ while true; do
 
     echo "🔹 Starting Newt..."
 
-    # Remove the health file before startup. Newt (or the watchdog) must create it again to become "healthy"
+    # Remove the health file before startup. Newt creates it itself once the tunnel
+    # is up, and removes it again if the connection is lost (see HEALTH_FILE in Newt).
     rm -f "$HEALTH_FILE"
 
     # Start Newt in the background
     /usr/bin/newt &
     NEWT_PID=$!
-
-    # --- WATCHDOG (Remove this block if Newt has built-in support for HEALTH_FILE) ---
-    # This simulates Newt being healthy for as long as the process is running.
-    (
-        while kill -0 $NEWT_PID 2>/dev/null; do
-            touch "$HEALTH_FILE"
-            sleep 4
-        done
-        rm -f "$HEALTH_FILE"
-    ) &
-    WATCHDOG_PID=$!
-    # ----------------------------------------------------------------------------------
 
     set +e
     wait "$NEWT_PID"
@@ -120,5 +112,8 @@ while true; do
     fi
 
     echo "⚠️ Newt stopped with exit code ${NEWT_EXIT_CODE}! Waiting 5 seconds before reconnecting..."
-    sleep 5
+    # Background sleep + wait, so a SIGTERM during the pause runs the trap immediately
+    # instead of being stuck until sleep finishes.
+    sleep 5 &
+    wait $! 2>/dev/null || true
 done

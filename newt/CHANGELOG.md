@@ -1,5 +1,15 @@
 # Changelog
 
+## 🔹 Version 1.16.0-stable2 - (16.09.2026)
+- Promoted hardening from the beta channel, observed there since 28.08.2026:
+  - Fixed health reporting: removed the shell watchdog that kept overwriting Newt's own health file, so the add-on now reports unhealthy when the tunnel is actually down
+  - Fixed armhf builds to download the ARMv6 binary instead of the ARMv7 one
+  - SHA256 checksums are now pinned and verified; builds fail instead of silently skipping verification
+  - Blocked PATH, HOME, LD_*, HEALTH_FILE and the configured credentials from being overridden via custom_env_vars
+  - Shutdown is no longer delayed by up to 5 seconds during the reconnect pause
+- Removed full_access, map: config:rw and hassio_api: true — none of these are needed to run Newt
+- Added a url field linking to the repository on the add-on store card
+
 ## 🔹 Version 1.16.0-stable1 - (28.08.2026)
 - Bumped newt to v.1.16.0 after stable beta
 
