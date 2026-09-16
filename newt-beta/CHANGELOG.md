@@ -1,5 +1,8 @@
 # Changelog
 
+## 🔹 Version 1.17.0-beta2 - (16.09.2026)
+- Update SHA256 checksums in Dockerfile
+
 ## 🔹 Version 1.17.0-beta1 - (16.09.2026)
 - Bumped newt to 1.17.0
 
