@@ -1,5 +1,5 @@
 name: "Newt Add-on (Beta)"
-version: "1.17.0-beta2"
+version: "1.17.0-beta3"
 slug: "newt-beta"
 description: "Newt beta release of Newt client for testing new features"
 url: "https://github.com/Ferdinand99/home-assistant-newt-addon"
@@ -27,7 +27,7 @@ options:
 schema:
   PANGOLIN_ENDPOINT: "str"
   NEWT_ID: "str"
-  NEWT_SECRET: "str"
+  NEWT_SECRET: "password"
   custom_env_vars:
     - "match(^[A-Z_][A-Z0-9_]*=[^\\n\\r\\0]+$)"
 hassio_api: false
