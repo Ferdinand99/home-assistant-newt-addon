@@ -76,6 +76,7 @@ if [[ -n "$CUSTOM_ENV_VARS" ]]; then
                     ;;
             esac
             echo "  ${var_name}=[REDACTED]"
+            # shellcheck disable=SC2163 # exporting a "NAME=value" string, not a variable named by its contents
             export "$env_var"
         fi
     done <<< "$CUSTOM_ENV_VARS"

@@ -1,0 +1,61 @@
+name: Validate
+
+# Pre-merge gate for both add-ons. Home Assistant Supervisor builds this
+# repo's Dockerfile locally on each user's own host at install/update time —
+# nothing here publishes an image anywhere. The point of this workflow is to
+# catch a broken build/config before it reaches a real user's Supervisor,
+# not to ship anything.
+
+on:
+  pull_request:
+    paths:
+      - "newt/**"
+      - "newt-beta/**"
+      - ".github/workflows/validate.yml"
+  push:
+    branches: [main]
+    paths:
+      - "newt/**"
+      - "newt-beta/**"
+      - ".github/workflows/validate.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        addon: [newt, newt-beta]
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Validate config.yaml is well-formed YAML
+        run: python3 -c "import yaml; yaml.safe_load(open('${{ matrix.addon }}/config.yaml'))"
+
+      - name: Check run.sh syntax
+        run: bash -n ${{ matrix.addon }}/run.sh
+
+      - name: ShellCheck run.sh
+        run: shellcheck ${{ matrix.addon }}/run.sh
+
+  build:
+    needs: lint
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        addon: [newt, newt-beta]
+        # These map to Dockerfile's BUILD_ARCH branches, matching what
+        # Supervisor passes in on a real install — not real cross-arch
+        # emulation, just picks which binary URL/checksum gets used.
+        arch: [amd64, aarch64, armv7, armhf]
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Build ${{ matrix.addon }} for ${{ matrix.arch }}
+        run: docker build --build-arg BUILD_ARCH=${{ matrix.arch }} ${{ matrix.addon }}
