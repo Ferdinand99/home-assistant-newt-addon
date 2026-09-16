@@ -2,7 +2,7 @@
 FROM ghcr.io/hassio-addons/base:14.0.0
 
 # Define the Newt version
-ARG NEWT_VERSION=1.16.0
+ARG NEWT_VERSION=1.17.0
 ENV NEWT_VERSION=${NEWT_VERSION}
 # SHA256 checksums for NEWT_VERSION above. Must be updated together with NEWT_VERSION.
 # Fetch them with:
