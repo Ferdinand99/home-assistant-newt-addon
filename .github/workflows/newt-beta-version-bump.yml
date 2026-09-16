@@ -102,6 +102,7 @@ jobs:
           title: "Bump Newt to ${{ steps.latest.outputs.version }} (beta)"
           commit-message: "Bump Newt to ${{ steps.latest.outputs.version }} in newt-beta"
           labels: newt-beta, dependencies
+          assignees: Ferdinand99
           body: |
             Automated bump of the Newt binary pinned in `newt-beta/`.
 

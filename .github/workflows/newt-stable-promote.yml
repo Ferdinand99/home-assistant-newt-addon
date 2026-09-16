@@ -133,6 +133,7 @@ jobs:
           title: "Promote Newt ${{ steps.versions.outputs.beta }} to stable"
           commit-message: "Bump Newt to ${{ steps.versions.outputs.beta }} in newt (stable)"
           labels: newt, dependencies
+          assignees: Ferdinand99
           body: |
             Newt `${{ steps.versions.outputs.beta }}` has been pinned on beta for at least
             ${{ env.OBSERVATION_DAYS }} days. This PR promotes just the Newt version pin
