@@ -1,5 +1,8 @@
 # Changelog
 
+## 🔹 Version 1.17.0-stable1 - (21.09.2026)
+- Bumped newt to v.1.17.0 after stable beta
+
 ## 🔹 Version 1.16.0-stable2 - (16.09.2026)
 - Promoted hardening from the beta channel, observed there since 28.08.2026:
   - Fixed health reporting: removed the shell watchdog that kept overwriting Newt's own health file, so the add-on now reports unhealthy when the tunnel is actually down
