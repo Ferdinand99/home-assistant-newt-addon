@@ -1,5 +1,8 @@
 # Changelog
 
+## 🔹 Version 1.18.0-beta1 - (29.09.2026)
+- Bumped newt to 1.18.0
+
 ## 🔹 Version 1.17.0-beta3 - (16.09.2026)
 - Mask NEWT_SECRET in the configuration UI (schema type changed from `str` to `password`)
 
