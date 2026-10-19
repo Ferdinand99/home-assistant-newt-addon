@@ -85,14 +85,15 @@ don't affect the add-on's health status.
 ## Reverse proxy / `trusted_proxies` setup (optional)
 
 If you're exposing Home Assistant through Pangolin and seeing `403:
-Forbidden` errors or token errors, tell Home Assistant to trust the add-on
-network:
+Forbidden` errors or token errors, tell Home Assistant to trust the proxy:
 
 1. Go to **Settings → System → Network → HTTP server**.
 2. Turn on **Trust X-Forwarded-For**.
-3. Under **Trusted proxies**, add `172.30.33.0/24` (the default network for
-   Home Assistant add-ons). Also add `127.0.0.1` and the IP of any other reverse
-   proxy in front of Home Assistant if they apply to your setup.
+3. Under **Trusted proxies**, add the address Newt's requests come from. The
+   add-on uses host networking, so this is `127.0.0.1` if your Pangolin
+   resource points at `127.0.0.1`/`localhost`, or your Home Assistant host's
+   IP if it points at that IP. Also add any other reverse proxy in front of
+   Home Assistant.
 4. Click **Save**. Then confirm the new settings after Home Assistant
    restarts. If you don't confirm within 5 minutes, they're reverted.
 
