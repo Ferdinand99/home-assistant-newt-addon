@@ -85,20 +85,24 @@ don't affect the add-on's health status.
 ## Reverse proxy / `trusted_proxies` setup (optional)
 
 If you're exposing Home Assistant through Pangolin and seeing `403:
-Forbidden` errors or token errors, add the add-on's network and your
-reverse proxy's IP to `configuration.yaml`:
+Forbidden` errors or token errors, tell Home Assistant to trust the add-on
+network:
 
-```yaml
-http:
-  use_x_forwarded_for: true
-  trusted_proxies:
-    - 172.30.33.0/24  # Default range for Home Assistant add-ons
-    - 127.0.0.1
-```
+1. Go to **Settings → System → Network → HTTP server**.
+2. Turn on **Trust X-Forwarded-For**.
+3. Under **Trusted proxies**, add `172.30.33.0/24` (the default network for
+   Home Assistant add-ons). Also add `127.0.0.1` and the IP of any other reverse
+   proxy in front of Home Assistant if they apply to your setup.
+4. Click **Save**. Then confirm the new settings after Home Assistant
+   restarts. If you don't confirm within 5 minutes, they're reverted.
 
 Home Assistant logs the exact IP to add if this isn't already configured.
-Restart Home Assistant (**Settings → System → Restart**, or `ha core
-restart`) after editing.
+
+The old `http:` block (`use_x_forwarded_for` / `trusted_proxies`) in
+`configuration.yaml` is ignored on current Home Assistant versions. It's
+imported once on upgrade, so remove it afterwards. On older versions that
+don't have the **HTTP server** section yet, use that YAML block and restart
+Home Assistant.
 
 ## Troubleshooting
 

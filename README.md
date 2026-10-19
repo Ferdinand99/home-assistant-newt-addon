@@ -111,22 +111,40 @@ custom_env_vars:
 
 ### 🛡️ Reverse Proxy / `trusted_proxies` Setup (Optional)
 
+> **Note:** Current versions of Home Assistant configure reverse proxy settings in the UI. The old `http:` block in `configuration.yaml` is imported once on upgrade and **ignored** after that. You'll see the repair issue *"HTTP YAML configuration is ignored after migration"* if it's still there.
+
 #### 📘 Step-by-Step Instructions
 
-1. Open your `configuration.yaml` file (usually located in `/config`).
-2. Add or update the `http:` section to include `use_x_forwarded_for` and `trusted_proxies`:
-#### NOTE: You should get a message in your Home-Assistant logs with the IP you need to set below when it's not already set
+1. Go to **Settings → System → Network** and find the **HTTP server** section.
+2. Turn on **Trust X-Forwarded-For**.
+3. Under **Trusted proxies**, add the IP addresses or CIDR networks your traffic comes from, for example:
+   - `172.30.33.0/24` – the default network for Home Assistant add-ons (this covers Newt)
+   - `127.0.0.1` – localhost (if relevant)
+   - the IP of any other reverse proxy or VM host in front of Home Assistant
+4. Click **Save**. Home Assistant restarts and asks you to **confirm** the new settings. If you don't confirm within 5 minutes, it reverts to the previous settings.
+
+> 💡 If the proxy isn't trusted yet, Home Assistant logs a message with the exact IP address to add.
+>
+> When you enter a network, use the network address and not a host address: `192.168.1.0/24`, not `192.168.1.50/24`.
+
+If you have an old `http:` block with `use_x_forwarded_for` / `trusted_proxies` in `configuration.yaml`, remove it once the settings show up correctly in the UI.
+
+<details>
+<summary>Older Home Assistant versions (no HTTP server section in the UI)</summary>
+
+If your Home Assistant version doesn't have the **HTTP server** section under **Settings → System → Network** yet, add this to `configuration.yaml` instead and restart Home Assistant:
+
 ```yaml
 http:
   use_x_forwarded_for: true
   trusted_proxies:
     - 172.30.33.0/24  # Default range for Home Assistant add-ons
     - 127.0.0.1       # Localhost (if relevant)
-    - 192.168.1.100   # Example: IP of your reverse proxy or VM host
-    - 192.168.1.2     # Home-Assistant IP
 ```
 
-🔎 How to Find Your Add-on or Proxy IP
+</details>
+
+#### 🔎 How to Find Your Add-on or Proxy IP
 
 If you're unsure of the IP range your add-on or reverse proxy uses, you can inspect the Docker network:
 ```bash
@@ -134,28 +152,14 @@ docker network inspect hassio
 ```
 
 Look under the "Containers" section to find the IP of your Newt add-on or proxy.
-✅ When to Use This
+
+#### ✅ When to Use This
 
 You need this setup if:
 
-    You're using a reverse proxy (e.g., NGINX, Traefik).
-
-    Your add-on or proxy accesses Home Assistant via internal IP (e.g., 172.30.x.x).
-
-    You're seeing token errors or "403: Forbidden" in the logs.
-
-🔄 Final Step
-
-After editing configuration.yaml, restart Home Assistant for the changes to take effect:
-
-    Go to Settings → System → Restart
-    or
-
-    Run via CLI:
-
-```sh
-ha core restart
-```
+- You're using a reverse proxy (e.g., NGINX, Traefik).
+- Your add-on or proxy accesses Home Assistant via internal IP (e.g., 172.30.x.x).
+- You're seeing token errors or "403: Forbidden" in the logs.
 
 ---
 
