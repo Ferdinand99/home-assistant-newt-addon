@@ -27,9 +27,10 @@ Without action on your part by this date, Newt will no longer be able to resolve
 ### Required Action (Users in France)
 If this affects you, you must specify another DNS provider (such as Cloudflare `1.1.1.1` or Google `8.8.8.8`) using `custom_env_vars` in your add-on configuration:
 
-```yaml
 custom_env_vars:
-  - "NEWT_DNS_SERVER=1.1.1.1"
+```yaml
+
+  dns=1.1.1.1
 ```
 
 <details open>
@@ -42,9 +43,10 @@ Sans action de votre part d'ici cette date, Newt ne sera plus en mesure de réso
 ### Action requise (Utilisateurs en France)
 Si vous êtes concerné, vous devez spécifier un autre fournisseur DNS (tel que Cloudflare `1.1.1.1` ou Google `8.8.8.8`) en utilisant la variable `custom_env_vars` dans la configuration de votre module complémentaire (Add-on) :
 
-```yaml
 custom_env_vars:
-  - "NEWT_DNS_SERVER=1.1.1.1"
+```yaml
+
+  dns=1.1.1.1
 ```
 ---
 
