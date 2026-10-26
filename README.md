@@ -15,6 +15,21 @@
 
 ---
 
+## ⚠️ Important Notice: DNS Resolution in France (Quad9 Shutdown)
+
+By default, Newt uses **Quad9's DNS servers (`9.9.9.9`)**. Following an unfavorable court ruling, Quad9 announced that it will shut down its services for users located in **France** starting **November 24, 2026**.
+
+Without action on your part by this date, Newt will no longer be able to resolve your exit point's domain name if you are located in France.
+
+### Required Action (Users in France)
+If this affects you, you must specify another DNS provider (such as Cloudflare `1.1.1.1` or Google `8.8.8.8`) using `custom_env_vars` in your add-on configuration:
+
+```yaml
+custom_env_vars:
+  - "NEWT_DNS_SERVER=1.1.1.1" 
+```
+---
+
 ## 📌 About this Add-on
 
 This add-on runs **[Newt](https://github.com/fosrl/newt)**, the tunnel client for **[Pangolin](https://docs.fossorial.io/Newt/overview)** by Fossorial, directly on your Home Assistant host.
