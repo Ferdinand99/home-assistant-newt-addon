@@ -30,7 +30,7 @@ If this affects you, you must specify another DNS provider (such as Cloudflare `
 custom_env_vars:
 ```yaml
 
-  dns=1.1.1.1
+  DNS=1.1.1.1
 ```
 
 <details open>
@@ -46,7 +46,7 @@ Si vous êtes concerné, vous devez spécifier un autre fournisseur DNS (tel que
 custom_env_vars:
 ```yaml
 
-  dns=1.1.1.1
+  DNS=1.1.1.1
 ```
 ---
 
