@@ -15,7 +15,10 @@
 
 ---
 
-## ⚠️ Important Notice: DNS Resolution in France (Quad9 Shutdown)
+## ⚠️ Important Notice / Information Importante : DNS Resolution in France (Quad9 Shutdown)
+
+<details open>
+<summary>🇬🇧 <b>English</b></summary>
 
 By default, Newt uses **Quad9's DNS servers (`9.9.9.9`)**. Following an unfavorable court ruling, Quad9 announced that it will shut down its services for users located in **France** starting **November 24, 2026**.
 
@@ -26,7 +29,22 @@ If this affects you, you must specify another DNS provider (such as Cloudflare `
 
 ```yaml
 custom_env_vars:
-  - "NEWT_DNS_SERVER=1.1.1.1" 
+  - "NEWT_DNS_SERVER=1.1.1.1"
+```
+
+<details open>
+<summary>🇫🇷 <b>Français</b></summary>
+
+Par défaut, Newt utilise les serveurs DNS de **Quad9 (`9.9.9.9`)**. À la suite d'une décision de justice défavorable, Quad9 a annoncé l'arrêt de ses services pour les utilisateurs situés en **France** à compter du **24 novembre 2026**.
+
+Sans action de votre part d'ici cette date, Newt ne sera plus en mesure de résoudre le nom de domaine de votre point de sortie si vous êtes situé en France.
+
+### Action requise (Utilisateurs en France)
+Si vous êtes concerné, vous devez spécifier un autre fournisseur DNS (tel que Cloudflare `1.1.1.1` ou Google `8.8.8.8`) en utilisant la variable `custom_env_vars` dans la configuration de votre module complémentaire (Add-on) :
+
+```yaml
+custom_env_vars:
+  - "NEWT_DNS_SERVER=1.1.1.1"
 ```
 ---
 
