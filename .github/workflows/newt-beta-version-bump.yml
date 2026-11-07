@@ -2,9 +2,9 @@ name: Bump Pangolin CLI version (beta)
 
 # Watches fosrl/cli (the Pangolin CLI, which embeds Newt) for new releases and
 # opens a PR bumping PANGOLIN_CLI_VERSION and the pinned SHA256 checksums in
-# newt-beta/ only. The stable channel (newt/) still ships the standalone Newt
-# binary and is NOT promoted from this: newt-stable-promote.yml is gated off
-# while beta runs the CLI.
+# newt-beta/ only. The stable channel (newt/) is not touched here: after the pin
+# has been on main for 7 days, newt-stable-promote.yml opens the PR that promotes
+# it to stable (and moves stable from Newt to the CLI the first time).
 
 on:
   schedule:
