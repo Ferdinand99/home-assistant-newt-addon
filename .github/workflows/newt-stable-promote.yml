@@ -1,18 +1,32 @@
-name: Promote Newt version (stable)
+name: Promote Pangolin CLI (stable)
 
-# After a Newt version has been running on beta for at least the repo's
-# observation window (see README: 5-7 days), opens a PR bumping just
-# NEWT_VERSION + SHA256 checksums in newt/ (stable) to match. Any other
-# beta-only hardening or features are still promoted by hand, on purpose —
-# this only automates the routine "new upstream Newt release" cycle.
+# Promotes the Pangolin CLI (fosrl/cli) from the beta add-on (newt-beta/) to the
+# stable add-on (newt/) once the version pinned in beta has been on main for at
+# least OBSERVATION_DAYS (see README: "How Updates Reach You").
 #
-# GATED OFF while newt-beta/ ships the Pangolin CLI instead of the standalone
-# Newt binary: beta pins PANGOLIN_CLI_VERSION (fosrl/cli, 0.x numbers), not
-# NEWT_VERSION (fosrl/newt), so copying beta's pin into stable would put the
-# wrong version and checksums in newt/. Stable stays on the standalone Newt
-# binary until the owner decides to move it. The workflow detects this by the
-# missing `ARG NEWT_VERSION` in newt-beta/Dockerfile and does nothing. To
-# re-enable it, give the promotion its own CLI-aware logic first.
+# Two modes, picked by looking at newt/Dockerfile:
+#
+#   migrate  Stable has no `ARG PANGOLIN_CLI_VERSION` yet, so it still runs the
+#            standalone Newt binary. The PR moves stable to the CLI: it copies
+#            newt-beta/Dockerfile and newt-beta/run.sh into newt/, sets the stable
+#            version (<beta base version>-stable1), updates the description and adds
+#            a CHANGELOG entry. Stable keeps its own config.yaml choices (AppArmor
+#            off, NEWT_SECRET as a plain str, name, slug, options, schema).
+#
+#   routine  Stable already runs the CLI. The PR copies PANGOLIN_CLI_VERSION and the
+#            four PANGOLIN_CLI_SHA256_* ARGs from the beta Dockerfile (they were
+#            already verified when the beta bump PR was reviewed), bumps the stable
+#            version counter and adds a CHANGELOG entry.
+#
+# Observation start: the commit date of the last commit on main's first-parent line
+# that touched the `ARG PANGOLIN_CLI_VERSION=` line in newt-beta/Dockerfile. That is
+# the moment the version landed on main, whether the PR was squash-merged or merged
+# with a merge commit (a plain `git log` would return the older bot commit inside the
+# PR branch and start the clock too early). Needs the full history (fetch-depth: 0).
+#
+# No duplicate PRs: the branch name contains the beta version, and the run is skipped
+# while any promotion PR (bot/pangolin-cli-stable-*) is still open. Hardening and
+# features beyond the CLI version are still promoted by hand.
 
 on:
   schedule:
@@ -24,134 +38,218 @@ permissions:
   pull-requests: write
 
 env:
-  OBSERVATION_DAYS: 5
+  OBSERVATION_DAYS: 7
+
+defaults:
+  run:
+    shell: bash
 
 jobs:
-  promote-newt-stable:
+  promote-cli-stable:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repo
+      - name: Checkout repo (full history)
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-      - name: Get versions pinned in beta and stable
-        id: versions
-        run: |
-          BETA=$(grep -oP '^ARG NEWT_VERSION=\K.*' newt-beta/Dockerfile || true)
-          STABLE=$(grep -oP '^ARG NEWT_VERSION=\K.*' newt/Dockerfile)
-          echo "beta=${BETA}" >> "$GITHUB_OUTPUT"
-          echo "stable=${STABLE}" >> "$GITHUB_OUTPUT"
-
-      - name: Check if stable is already on the beta version
-        id: uptodate
-        run: |
-          if [ -z "${{ steps.versions.outputs.beta }}" ]; then
-            echo "::notice::newt-beta/ no longer pins a Newt version (it ships the Pangolin CLI); stable promotion is disabled."
-            echo "uptodate=true" >> "$GITHUB_OUTPUT"
-          elif [ "${{ steps.versions.outputs.beta }}" = "${{ steps.versions.outputs.stable }}" ]; then
-            echo "uptodate=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "uptodate=false" >> "$GITHUB_OUTPUT"
-          fi
-
-      - name: Find when beta was bumped to this version, and check observation window
-        id: bumpdate
-        if: steps.uptodate.outputs.uptodate == 'false'
-        run: |
-          BETA="${{ steps.versions.outputs.beta }}"
-          LINE=$(grep -m1 -P "^## .* Version ${BETA}-beta1 - " newt-beta/CHANGELOG.md || true)
-          if [ -z "$LINE" ]; then
-            echo "::warning::No '${BETA}-beta1' changelog entry found in newt-beta/CHANGELOG.md; can't determine when the observation window started, skipping for now."
-            echo "ready=false" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-
-          DATE=$(echo "$LINE" | grep -oP '\(\K[0-9]{2}\.[0-9]{2}\.[0-9]{4}(?=\))')
-          DAY="${DATE%%.*}"
-          REST="${DATE#*.}"
-          MONTH="${REST%%.*}"
-          YEAR="${REST#*.}"
-          BUMP_EPOCH=$(date -d "${YEAR}-${MONTH}-${DAY}" +%s)
-          NOW_EPOCH=$(date -u +%s)
-          DAYS_ELAPSED=$(( (NOW_EPOCH - BUMP_EPOCH) / 86400 ))
-          echo "Beta was bumped to ${BETA} on ${DATE} (${DAYS_ELAPSED} days ago)"
-
-          if [ "$DAYS_ELAPSED" -ge "$OBSERVATION_DAYS" ]; then
-            echo "ready=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "ready=false" >> "$GITHUB_OUTPUT"
-            echo "::notice::Only ${DAYS_ELAPSED} of ${OBSERVATION_DAYS} observation days elapsed for ${BETA}; not promoting yet."
-          fi
-
-      - name: Fetch SHA256 checksums for this release
-        if: steps.bumpdate.outputs.ready == 'true'
-        id: sha
+      - name: Decide whether to promote
+        id: decide
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          BETA="${{ steps.versions.outputs.beta }}"
-          curl -sL --fail \
-            -H "Authorization: Bearer ${GH_TOKEN}" \
-            -H "Accept: application/vnd.github+json" \
-            "https://api.github.com/repos/fosrl/newt/releases/tags/${BETA}" \
-            -o /tmp/release.json
-          for pair in "amd64:amd64" "arm64:arm64" "arm32:arm32" "arm32v6:arm32v6"; do
-            asset="${pair%%:*}"
-            key="${pair##*:}"
-            digest=$(jq -r --arg name "newt_linux_${asset}" \
-              '.assets[] | select(.name == $name) | .digest' /tmp/release.json)
-            if [ -z "${digest}" ] || [ "${digest}" = "null" ]; then
-              echo "::error::No digest found for newt_linux_${asset} in release ${BETA}"
+          emit() {
+            {
+              echo "promote=$1"
+              echo "mode=${MODE:-}"
+              echo "beta=${BETA:-}"
+              echo "stable=${STABLE:-}"
+              echo "since=${SINCE_DATE:-}"
+              echo "branch=bot/pangolin-cli-stable-${BETA:-}"
+            } >> "$GITHUB_OUTPUT"
+          }
+
+          BETA=$(grep -oP '^ARG PANGOLIN_CLI_VERSION=\K.*' newt-beta/Dockerfile || true)
+          STABLE=$(grep -oP '^ARG PANGOLIN_CLI_VERSION=\K.*' newt/Dockerfile || true)
+          MODE=routine
+          if [ -z "$STABLE" ]; then
+            MODE=migrate
+          fi
+
+          if [ -z "$BETA" ]; then
+            echo "::notice::newt-beta/Dockerfile does not pin PANGOLIN_CLI_VERSION; nothing to promote."
+            emit false
+            exit 0
+          fi
+
+          if [ "$BETA" = "$STABLE" ]; then
+            echo "::notice::Stable is already on Pangolin CLI ${BETA}; nothing to promote."
+            emit false
+            exit 0
+          fi
+
+          # When did the beta's current CLI pin land on main?
+          SINCE=$(git log --first-parent -m -1 --format='%ct' \
+            -G '^ARG PANGOLIN_CLI_VERSION=' -- newt-beta/Dockerfile)
+          if [ -z "$SINCE" ]; then
+            echo "::warning::Found no commit that changed the PANGOLIN_CLI_VERSION line in newt-beta/Dockerfile; cannot tell when the observation window started."
+            emit false
+            exit 0
+          fi
+          SINCE_DATE=$(date -u -d "@${SINCE}" +%Y-%m-%d)
+          DAYS=$(( ($(date -u +%s) - SINCE) / 86400 ))
+          echo "Beta pinned Pangolin CLI ${BETA} on ${SINCE_DATE} (${DAYS} days ago); stable has ${STABLE:-no Pangolin CLI}."
+
+          if [ "$DAYS" -lt "$OBSERVATION_DAYS" ]; then
+            echo "::notice::Only ${DAYS} of ${OBSERVATION_DAYS} observation days elapsed for Pangolin CLI ${BETA}; not promoting yet."
+            emit false
+            exit 0
+          fi
+
+          # Do not stack promotion PRs: wait until the open one is merged or closed.
+          OPEN=$(gh pr list --state open --json headRefName \
+            --jq '[.[] | select(.headRefName | startswith("bot/pangolin-cli-stable-"))] | length')
+          if [ "$OPEN" -gt 0 ]; then
+            echo "::notice::A stable promotion PR is already open; not opening another."
+            emit false
+            exit 0
+          fi
+
+          echo "Promoting Pangolin CLI ${BETA} to stable (${MODE} mode)."
+          emit true
+
+      - name: Migrate stable from Newt to the Pangolin CLI
+        id: migrate
+        if: steps.decide.outputs.promote == 'true' && steps.decide.outputs.mode == 'migrate'
+        env:
+          BETA: ${{ steps.decide.outputs.beta }}
+          SINCE: ${{ steps.decide.outputs.since }}
+        run: |
+          # The files are copied unchanged, so they must not contain anything that is
+          # specific to the beta channel. Stop and let a human transform them if they do.
+          if grep -qi 'beta' newt-beta/Dockerfile newt-beta/run.sh; then
+            echo "::error::newt-beta/Dockerfile or newt-beta/run.sh mentions 'beta'; review it and adapt this workflow before migrating stable."
+            grep -ni 'beta' newt-beta/Dockerfile newt-beta/run.sh
+            exit 1
+          fi
+          cp newt-beta/Dockerfile newt/Dockerfile
+          cp newt-beta/run.sh newt/run.sh
+          chmod +x newt/run.sh
+
+          # Same scheme as beta: the add-on version is independent of the CLI version.
+          # Take the beta's base version (2.0.0-beta1 -> 2.0.0) and start the stable counter.
+          BETA_CONFIG_VERSION=$(grep -oP '^version: "\K[^"]+' newt-beta/config.yaml)
+          if [[ ! "${BETA_CONFIG_VERSION}" =~ ^(.+)-beta[0-9]+$ ]]; then
+            echo "::error::Cannot parse beta version '${BETA_CONFIG_VERSION}' in newt-beta/config.yaml"
+            exit 1
+          fi
+          NEW_VERSION="${BASH_REMATCH[1]}-stable1"
+          OLD_VERSION=$(grep -oP '^version: "\K[^"]+' newt/config.yaml)
+          if [ "$(printf '%s\n%s\n' "$OLD_VERSION" "$NEW_VERSION" | sort -V | tail -n 1)" != "$NEW_VERSION" ] || [ "$OLD_VERSION" = "$NEW_VERSION" ]; then
+            echo "::error::New stable version ${NEW_VERSION} is not higher than ${OLD_VERSION}; Home Assistant would not offer the update."
+            exit 1
+          fi
+          sed -i "s/^version: \".*\"/version: \"${NEW_VERSION}\"/" newt/config.yaml
+          sed -i 's/^description: .*/description: "Runs the Pangolin CLI (embedded Newt) to connect Home Assistant to Pangolin"/' newt/config.yaml
+
+          # No backticks or dollar signs in the entry: discord-changelog-stable.yml pastes it into a shell string.
+          DATE=$(date +"%d.%m.%Y")
+          {
+            echo "## 🔹 Version ${NEW_VERSION} - (${DATE})"
+            echo "- Switched from the standalone Newt binary to the official Pangolin CLI ${BETA} (pangolin-cli up site), which embeds Newt. It has been running on the beta channel for at least ${OBSERVATION_DAYS} days (since ${SINCE})"
+            echo "- No configuration change is needed: the options (PANGOLIN_ENDPOINT, NEWT_ID, NEWT_SECRET) and custom_env_vars work as before. The add-on passes the credentials to the CLI as SITE_ID/SITE_SECRET and as NEWT_ID/NEWT_SECRET"
+            echo "- SITE_ID and SITE_SECRET are now protected and cannot be overridden via custom_env_vars"
+            echo "- The add-on version starts a new 2.x line, because the CLI's own version (0.x) is lower than Newt's 1.x and Home Assistant would not offer the update. The pinned CLI version is in the Dockerfile and in this changelog"
+            echo "- Stable still has AppArmor disabled and shows NEWT_SECRET as a plain text field"
+            echo
+          } > "${RUNNER_TEMP}/entry.txt"
+          sed -i "2r ${RUNNER_TEMP}/entry.txt" newt/CHANGELOG.md
+
+          {
+            echo "title=Switch stable to the Pangolin CLI ${BETA}"
+            echo "version=${NEW_VERSION}"
+          } >> "$GITHUB_OUTPUT"
+          cat > "${RUNNER_TEMP}/pr-body.md" <<EOF
+          Pangolin CLI \`${BETA}\` has been pinned on beta since ${SINCE}, at least ${OBSERVATION_DAYS} days.
+          Stable still runs the standalone Newt binary, so this PR moves it to the Pangolin CLI.
+
+          - Copies \`newt-beta/Dockerfile\` and \`newt-beta/run.sh\` into \`newt/\` unchanged (checked for beta-specific content)
+          - Stable version \`${OLD_VERSION}\` -> \`${NEW_VERSION}\`, new description, new CHANGELOG entry
+          - Stable keeps its own settings: AppArmor off, \`NEWT_SECRET\` as a plain \`str\`, same name, slug, options and schema
+          - No configuration change is needed for users
+          - Release: https://github.com/fosrl/cli/releases/tag/${BETA}
+
+          Before merging, update the stable column of the README ("Stable vs. Beta" and "How Updates Reach You") and \`newt/DOCS.md\` if they still describe the standalone Newt binary.
+          EOF
+
+      - name: Promote the Pangolin CLI version to stable
+        id: routine
+        if: steps.decide.outputs.promote == 'true' && steps.decide.outputs.mode == 'routine'
+        env:
+          BETA: ${{ steps.decide.outputs.beta }}
+          STABLE: ${{ steps.decide.outputs.stable }}
+          SINCE: ${{ steps.decide.outputs.since }}
+        run: |
+          # Copy the version and the four checksums from beta. They were verified when the
+          # beta bump PR was reviewed, so they are not fetched again.
+          for name in PANGOLIN_CLI_VERSION PANGOLIN_CLI_SHA256_AMD64 PANGOLIN_CLI_SHA256_ARM64 PANGOLIN_CLI_SHA256_ARM32 PANGOLIN_CLI_SHA256_ARM32V6; do
+            line=$(grep -m1 "^ARG ${name}=" newt-beta/Dockerfile || true)
+            if [[ ! "$line" =~ ^ARG\ ${name}=(\"[0-9a-f]{64}\"|[0-9]+\.[0-9]+\.[0-9]+)$ ]]; then
+              echo "::error::Unexpected or missing '${name}' line in newt-beta/Dockerfile: ${line}"
               exit 1
             fi
-            echo "${key}=${digest#sha256:}" >> "$GITHUB_OUTPUT"
+            if ! grep -q "^ARG ${name}=" newt/Dockerfile; then
+              echo "::error::newt/Dockerfile has no '${name}' line to update"
+              exit 1
+            fi
+            sed -i "s|^ARG ${name}=.*|${line}|" newt/Dockerfile
           done
+          if ! diff <(grep -E '^ARG PANGOLIN_CLI_(VERSION|SHA256_[A-Z0-9]+)=' newt-beta/Dockerfile) \
+                    <(grep -E '^ARG PANGOLIN_CLI_(VERSION|SHA256_[A-Z0-9]+)=' newt/Dockerfile); then
+            echo "::error::The CLI pins in newt/Dockerfile still differ from newt-beta/Dockerfile"
+            exit 1
+          fi
 
-      - name: Update newt/Dockerfile
-        if: steps.bumpdate.outputs.ready == 'true'
-        run: |
-          NEW="${{ steps.versions.outputs.beta }}"
-          sed -i "s/^ARG NEWT_VERSION=.*/ARG NEWT_VERSION=${NEW}/" newt/Dockerfile
-          sed -i "s/^ARG NEWT_SHA256_AMD64=.*/ARG NEWT_SHA256_AMD64=\"${{ steps.sha.outputs.amd64 }}\"/" newt/Dockerfile
-          sed -i "s/^ARG NEWT_SHA256_ARM64=.*/ARG NEWT_SHA256_ARM64=\"${{ steps.sha.outputs.arm64 }}\"/" newt/Dockerfile
-          sed -i "s/^ARG NEWT_SHA256_ARM32=.*/ARG NEWT_SHA256_ARM32=\"${{ steps.sha.outputs.arm32 }}\"/" newt/Dockerfile
-          sed -i "s/^ARG NEWT_SHA256_ARM32V6=.*/ARG NEWT_SHA256_ARM32V6=\"${{ steps.sha.outputs.arm32v6 }}\"/" newt/Dockerfile
+          # Same scheme as beta: increment the counter (2.0.0-stable1 -> 2.0.0-stable2).
+          OLD_VERSION=$(grep -oP '^version: "\K[^"]+' newt/config.yaml)
+          if [[ ! "${OLD_VERSION}" =~ ^(.+-stable)([0-9]+)$ ]]; then
+            echo "::error::Cannot parse stable version '${OLD_VERSION}' in newt/config.yaml"
+            exit 1
+          fi
+          NEW_VERSION="${BASH_REMATCH[1]}$(( BASH_REMATCH[2] + 1 ))"
+          sed -i "s/^version: \".*\"/version: \"${NEW_VERSION}\"/" newt/config.yaml
 
-      - name: Bump newt/config.yaml version
-        if: steps.bumpdate.outputs.ready == 'true'
-        id: configversion
-        run: |
-          NEW_CONFIG_VERSION="${{ steps.versions.outputs.beta }}-stable1"
-          sed -i "s/^version: \".*\"/version: \"${NEW_CONFIG_VERSION}\"/" newt/config.yaml
-          echo "version=${NEW_CONFIG_VERSION}" >> "$GITHUB_OUTPUT"
-
-      - name: Add CHANGELOG.md entry
-        if: steps.bumpdate.outputs.ready == 'true'
-        run: |
           DATE=$(date +"%d.%m.%Y")
-          cat > /tmp/entry.txt <<EOF
-          ## 🔹 Version ${{ steps.configversion.outputs.version }} - (${DATE})
-          - Bumped newt to v.${{ steps.versions.outputs.beta }} after stable beta
+          {
+            echo "## 🔹 Version ${NEW_VERSION} - (${DATE})"
+            echo "- Bumped Pangolin CLI to ${BETA} after the beta observation (since ${SINCE})"
+            echo
+          } > "${RUNNER_TEMP}/entry.txt"
+          sed -i "2r ${RUNNER_TEMP}/entry.txt" newt/CHANGELOG.md
 
+          {
+            echo "title=Promote Pangolin CLI ${BETA} to stable"
+            echo "version=${NEW_VERSION}"
+          } >> "$GITHUB_OUTPUT"
+          cat > "${RUNNER_TEMP}/pr-body.md" <<EOF
+          Pangolin CLI \`${BETA}\` has been pinned on beta since ${SINCE}, at least ${OBSERVATION_DAYS} days.
+          This PR promotes just the CLI pin to stable.
+
+          - \`PANGOLIN_CLI_VERSION\` \`${STABLE}\` -> \`${BETA}\` and the four \`PANGOLIN_CLI_SHA256_*\` checksums, copied from \`newt-beta/Dockerfile\` (already verified in the beta bump PR)
+          - Stable version \`${OLD_VERSION}\` -> \`${NEW_VERSION}\` and a new CHANGELOG entry
+          - Release: https://github.com/fosrl/cli/releases/tag/${BETA}
+
+          Other beta-only hardening or features are still promoted by hand.
           EOF
-          sed -i '2r /tmp/entry.txt' newt/CHANGELOG.md
 
       - name: Open pull request
-        if: steps.bumpdate.outputs.ready == 'true'
+        if: steps.decide.outputs.promote == 'true'
         uses: peter-evans/create-pull-request@v8
         with:
-          branch: bot/newt-stable-${{ steps.versions.outputs.beta }}
-          title: "Promote Newt ${{ steps.versions.outputs.beta }} to stable"
-          commit-message: "Bump Newt to ${{ steps.versions.outputs.beta }} in newt (stable)"
+          branch: ${{ steps.decide.outputs.branch }}
+          title: ${{ steps.migrate.outputs.title || steps.routine.outputs.title }}
+          commit-message: ${{ steps.migrate.outputs.title || steps.routine.outputs.title }}
           labels: newt, dependencies
           assignees: Ferdinand99
-          body: |
-            Newt `${{ steps.versions.outputs.beta }}` has been pinned on beta for at least
-            ${{ env.OBSERVATION_DAYS }} days. This PR promotes just the Newt version pin
-            (Dockerfile ARGs + config.yaml + CHANGELOG.md) to stable — any other beta-only
-            hardening or features are still promoted by hand.
-
-            - Release: https://github.com/fosrl/newt/releases/tag/${{ steps.versions.outputs.beta }}
-            - SHA256 checksums fetched from GitHub's release asset digests for this tag
-
-            Please review before merging.
+          body-path: ${{ runner.temp }}/pr-body.md

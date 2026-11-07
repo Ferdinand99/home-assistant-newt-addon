@@ -87,7 +87,7 @@ The add-on uses **host networking** (`host_network: true`), so Newt sees the sam
 - ✅ Supports `amd64`, `aarch64`, `armv7` and `armhf` (armhf uses Newt's ARMv6 build)
 - ✅ Automatic reconnect: Newt restarts 5 seconds after it exits
 - ✅ Real health reporting: the add-on is **healthy** only while the tunnel to Pangolin is actually up
-- ✅ Verified downloads: the Newt binary is fetched from the official [fosrl/newt releases](https://github.com/fosrl/newt/releases) and checked against a pinned SHA256 checksum. The build fails if the checksum doesn't match.
+- ✅ Verified downloads: the Pangolin CLI or Newt binary is fetched from the official [fosrl/cli](https://github.com/fosrl/cli/releases) or [fosrl/newt](https://github.com/fosrl/newt/releases) releases and checked against a pinned SHA256 checksum. The build fails if the checksum doesn't match.
 - ✅ Credentials and custom variable values are shown as `[REDACTED]` in the logs
 - ✅ Starts automatically when Home Assistant boots
 - ✅ Beta channel with a hardened AppArmor profile enabled by default
@@ -101,8 +101,8 @@ This repository contains two separate add-ons. Add the repository once, and both
 | | **Newt Add-on** (stable) | **Newt Add-on (Beta)** |
 |---|---|---|
 | Folder | [`newt/`](newt/) | [`newt-beta/`](newt-beta/) |
-| Runs | Standalone Newt binary | [Pangolin CLI](https://github.com/fosrl/cli) (`pangolin up site`, Newt built in) |
-| New releases | Newt, after at least 5 days on beta | Pangolin CLI, same day or shortly after upstream release |
+| Runs | Standalone Newt binary for now; moves to the Pangolin CLI by the promotion workflow (see below) | [Pangolin CLI](https://github.com/fosrl/cli) (`pangolin-cli up site`, Newt built in) |
+| New releases | Pangolin CLI, after at least 7 days on beta | Pangolin CLI, same day or shortly after upstream release |
 | AppArmor | Disabled | **Enabled** with a [hardened profile](newt-beta/apparmor.txt) |
 | `NEWT_SECRET` in the UI | Plain text field | Masked password field |
 | Newt's native WireGuard interface modes | ✅ Supported | ❌ Blocked by AppArmor (default netstack mode only) |
@@ -110,7 +110,7 @@ This repository contains two separate add-ons. Add the repository once, and both
 
 **Which one should I use?**
 - Use **stable** if you want the most tested version, if your host doesn't support AppArmor, or if you use Newt's native interface modes (`USE_NATIVE_INTERFACE`, `USE_NATIVE_MAIN_INTERFACE` or client mode).
-- Use **beta** if you want new Newt releases and hardening right away, and can live with the occasional issue.
+- Use **beta** if you want new Pangolin CLI releases and hardening right away, and can live with the occasional issue.
 
 > ⚠️ Run only one of them at a time with the same Newt ID and secret.
 
@@ -119,8 +119,8 @@ This repository contains two separate add-ons. Add the repository once, and both
 The update flow is automated with GitHub Actions:
 
 1. **Beta:** a workflow checks for new [fosrl/cli](https://github.com/fosrl/cli/releases) (Pangolin CLI) releases twice a day. When it finds one, it opens a pull request that bumps the CLI version and the pinned SHA256 checksums in `newt-beta/`.
-2. **Stable:** stable still runs the standalone Newt binary. While beta tests the Pangolin CLI, automatic promotion from beta to stable is paused; stable moves to the CLI by hand once the beta has proven itself.
-3. Changes beyond the Newt version, such as hardening and new features, are tested on beta first and promoted to stable by hand.
+2. **Stable:** once the CLI version pinned in `newt-beta/` has been on `main` for **7 days**, a second workflow opens a pull request for stable. The first time, that pull request moves stable from the standalone Newt binary to the Pangolin CLI (same Dockerfile and `run.sh` as beta; your options stay the same). After that, it copies the new CLI version and checksums from beta into `newt/`. The stable add-on keeps its own settings, such as AppArmor disabled and the plain `NEWT_SECRET` field.
+3. Changes beyond the CLI version, such as hardening and new features, are tested on beta first and promoted to stable by hand.
 
 See the changelogs for what changed in each release: [stable](newt/CHANGELOG.md) · [beta](newt-beta/CHANGELOG.md).
 
