@@ -5,6 +5,14 @@ name: Promote Newt version (stable)
 # NEWT_VERSION + SHA256 checksums in newt/ (stable) to match. Any other
 # beta-only hardening or features are still promoted by hand, on purpose —
 # this only automates the routine "new upstream Newt release" cycle.
+#
+# GATED OFF while newt-beta/ ships the Pangolin CLI instead of the standalone
+# Newt binary: beta pins PANGOLIN_CLI_VERSION (fosrl/cli, 0.x numbers), not
+# NEWT_VERSION (fosrl/newt), so copying beta's pin into stable would put the
+# wrong version and checksums in newt/. Stable stays on the standalone Newt
+# binary until the owner decides to move it. The workflow detects this by the
+# missing `ARG NEWT_VERSION` in newt-beta/Dockerfile and does nothing. To
+# re-enable it, give the promotion its own CLI-aware logic first.
 
 on:
   schedule:
@@ -29,7 +37,7 @@ jobs:
       - name: Get versions pinned in beta and stable
         id: versions
         run: |
-          BETA=$(grep -oP '^ARG NEWT_VERSION=\K.*' newt-beta/Dockerfile)
+          BETA=$(grep -oP '^ARG NEWT_VERSION=\K.*' newt-beta/Dockerfile || true)
           STABLE=$(grep -oP '^ARG NEWT_VERSION=\K.*' newt/Dockerfile)
           echo "beta=${BETA}" >> "$GITHUB_OUTPUT"
           echo "stable=${STABLE}" >> "$GITHUB_OUTPUT"
@@ -37,7 +45,10 @@ jobs:
       - name: Check if stable is already on the beta version
         id: uptodate
         run: |
-          if [ "${{ steps.versions.outputs.beta }}" = "${{ steps.versions.outputs.stable }}" ]; then
+          if [ -z "${{ steps.versions.outputs.beta }}" ]; then
+            echo "::notice::newt-beta/ no longer pins a Newt version (it ships the Pangolin CLI); stable promotion is disabled."
+            echo "uptodate=true" >> "$GITHUB_OUTPUT"
+          elif [ "${{ steps.versions.outputs.beta }}" = "${{ steps.versions.outputs.stable }}" ]; then
             echo "uptodate=true" >> "$GITHUB_OUTPUT"
           else
             echo "uptodate=false" >> "$GITHUB_OUTPUT"
