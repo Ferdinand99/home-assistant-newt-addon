@@ -34,28 +34,28 @@ jobs:
             }
           ' newt-beta/CHANGELOG.md)
 
-          # Safe escaping for JSON format
-          changelog_block=$(echo "$changelog_block" | sed 's/"/\\"/g' | sed ':a;N;$!ba;s/\n/\\n/g')
-          echo "BLOCK=$changelog_block" >> "$GITHUB_OUTPUT"
+          # Multi-line step output. The next step builds the JSON with jq from an
+          # environment variable, so the changelog text never becomes shell code
+          # (backticks or $(...) in a changelog entry would otherwise run).
+          {
+            echo 'BLOCK<<CHANGELOG_EOF'
+            echo "$changelog_block"
+            echo 'CHANGELOG_EOF'
+          } >> "$GITHUB_OUTPUT"
 
       - name: Send to Discord
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_CHANGELOG_WEBHOOK_BETA }}
           ROLE_ID: "1498952905334587443"
+          BLOCK: ${{ steps.changelog.outputs.BLOCK }}
         shell: bash
         run: |
-          # We use a variable for the message to keep the curl command clean
+          # The role ping goes in the message content, outside the embed
           MSG_CONTENT="<@&$ROLE_ID> New beta-update is ready! 🚀"
-          
-          curl -H "Content-Type: application/json" \
-          -X POST \
-          -d "{
-            \"username\": \"Newt Beta Changelog Bot\",
-            \"content\": \"$MSG_CONTENT\",
-            \"embeds\": [{
-              \"title\": \"🧪 Beta Changelog Update\",
-              \"description\": \"${{ steps.changelog.outputs.BLOCK }}\",
-              \"color\": 3447003
-            }]
-          }" \
-          "$DISCORD_WEBHOOK"
+
+          jq -n \
+            --arg content "$MSG_CONTENT" \
+            --arg description "$BLOCK" \
+            '{username: "Newt Beta Changelog Bot", content: $content,
+              embeds: [{title: "🧪 Beta Changelog Update", description: $description, color: 3447003}]}' \
+            | curl --fail-with-body -H "Content-Type: application/json" -X POST -d @- "$DISCORD_WEBHOOK"
