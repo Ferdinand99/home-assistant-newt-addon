@@ -52,7 +52,7 @@ custom_env_vars:
 
 ## 📌 About this Add-on
 
-This add-on runs **[Newt](https://github.com/fosrl/newt)**, the tunnel client for **[Pangolin](https://docs.fossorial.io/Newt/overview)** by Fossorial, directly on your Home Assistant host.
+This add-on runs **[Newt](https://github.com/fosrl/newt)**, the tunnel client for **[Pangolin](https://docs.fossorial.io/Newt/overview)** by Fossorial, directly on your Home Assistant host. The beta add-on runs Newt through the official **[Pangolin CLI](https://github.com/fosrl/cli)** (`pangolin up site`), which replaces the standalone Newt binary upstream.
 
 Newt opens an **outbound** tunnel from your home network to your Pangolin server. Pangolin can then publish Home Assistant and other services on your network under your own domain, **without port forwarding** on your router and without exposing your home IP address.
 
@@ -101,7 +101,8 @@ This repository contains two separate add-ons. Add the repository once, and both
 | | **Newt Add-on** (stable) | **Newt Add-on (Beta)** |
 |---|---|---|
 | Folder | [`newt/`](newt/) | [`newt-beta/`](newt-beta/) |
-| New Newt releases | After at least 5 days on beta | Same day or shortly after upstream release |
+| Runs | Standalone Newt binary | [Pangolin CLI](https://github.com/fosrl/cli) (`pangolin up site`, Newt built in) |
+| New releases | Newt, after at least 5 days on beta | Pangolin CLI, same day or shortly after upstream release |
 | AppArmor | Disabled | **Enabled** with a [hardened profile](newt-beta/apparmor.txt) |
 | `NEWT_SECRET` in the UI | Plain text field | Masked password field |
 | Newt's native WireGuard interface modes | ✅ Supported | ❌ Blocked by AppArmor (default netstack mode only) |
@@ -117,8 +118,8 @@ This repository contains two separate add-ons. Add the repository once, and both
 
 The update flow is automated with GitHub Actions:
 
-1. **Beta:** a workflow checks for new [fosrl/newt](https://github.com/fosrl/newt/releases) releases twice a day. When it finds one, it opens a pull request that bumps the Newt version and the pinned SHA256 checksums in `newt-beta/`.
-2. **Stable:** once a Newt version has run on beta for at least **5 days**, a second workflow opens a pull request that promotes the same version to `newt/`.
+1. **Beta:** a workflow checks for new [fosrl/cli](https://github.com/fosrl/cli/releases) (Pangolin CLI) releases twice a day. When it finds one, it opens a pull request that bumps the CLI version and the pinned SHA256 checksums in `newt-beta/`.
+2. **Stable:** stable still runs the standalone Newt binary. While beta tests the Pangolin CLI, automatic promotion from beta to stable is paused; stable moves to the CLI by hand once the beta has proven itself.
 3. Changes beyond the Newt version, such as hardening and new features, are tested on beta first and promoted to stable by hand.
 
 See the changelogs for what changed in each release: [stable](newt/CHANGELOG.md) · [beta](newt-beta/CHANGELOG.md).
