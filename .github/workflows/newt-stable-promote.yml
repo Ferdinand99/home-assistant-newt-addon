@@ -155,9 +155,10 @@ jobs:
 
           # No backticks or dollar signs in the entry: discord-changelog-stable.yml pastes it into a shell string.
           DATE=$(date +"%d.%m.%Y")
+          SINCE_DISPLAY=$(date -d "${SINCE}" +"%d.%m.%Y")
           {
             echo "## 🔹 Version ${NEW_VERSION} - (${DATE})"
-            echo "- Switched from the standalone Newt binary to the official Pangolin CLI ${BETA} (pangolin-cli up site), which embeds Newt. It has been running on the beta channel for at least ${OBSERVATION_DAYS} days (since ${SINCE})"
+            echo "- Switched from the standalone Newt binary to the official Pangolin CLI ${BETA} (pangolin-cli up site), which embeds Newt. It has been running on the beta channel for at least ${OBSERVATION_DAYS} days (since ${SINCE_DISPLAY})"
             echo "- No configuration change is needed: the options (PANGOLIN_ENDPOINT, NEWT_ID, NEWT_SECRET) and custom_env_vars work as before. The add-on passes the credentials to the CLI as SITE_ID/SITE_SECRET and as NEWT_ID/NEWT_SECRET"
             echo "- SITE_ID and SITE_SECRET are now protected and cannot be overridden via custom_env_vars"
             echo "- The add-on version starts a new 2.x line, because the CLI's own version (0.x) is lower than Newt's 1.x and Home Assistant would not offer the update. The pinned CLI version is in the Dockerfile and in this changelog"
@@ -221,9 +222,10 @@ jobs:
           sed -i "s/^version: \".*\"/version: \"${NEW_VERSION}\"/" newt/config.yaml
 
           DATE=$(date +"%d.%m.%Y")
+          SINCE_DISPLAY=$(date -d "${SINCE}" +"%d.%m.%Y")
           {
             echo "## 🔹 Version ${NEW_VERSION} - (${DATE})"
-            echo "- Bumped Pangolin CLI to ${BETA} after the beta observation (since ${SINCE})"
+            echo "- Bumped Pangolin CLI to ${BETA} after the beta observation (since ${SINCE_DISPLAY})"
             echo
           } > "${RUNNER_TEMP}/entry.txt"
           sed -i "2r ${RUNNER_TEMP}/entry.txt" newt/CHANGELOG.md
