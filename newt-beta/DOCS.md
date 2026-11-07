@@ -1,14 +1,36 @@
 # Home Assistant Add-on: Newt (Beta)
 
-Runs [Newt](https://docs.fossorial.io/Newt/overview) from
-[Fossorial](https://fossorial.io/) inside Home Assistant, connecting this
-instance to your [Pangolin](https://docs.pangolin.net/) server over an
-outbound WireGuard tunnel.
+Runs the official [Pangolin CLI](https://github.com/fosrl/cli)
+(`pangolin-cli up site`) inside Home Assistant, connecting this instance to
+your [Pangolin](https://docs.pangolin.net/) server over an outbound WireGuard
+tunnel. The CLI embeds [Newt](https://docs.fossorial.io/Newt/overview), so it
+accepts the same settings and environment variables as the standalone Newt
+binary.
 
-This is the **beta** channel. It receives Newt updates the same day (or
-shortly after) they're published upstream, along with add-on hardening and
-fixes before they're promoted to the stable channel. If your host doesn't
-support AppArmor, use the stable **Newt Add-on** instead.
+This is the **beta** channel. It receives Pangolin CLI updates the same day
+(or shortly after) they're published upstream, along with add-on hardening
+and fixes. If your host doesn't support AppArmor, use the stable **Newt
+Add-on** instead.
+
+### Switched from Newt to the Pangolin CLI
+
+Newt is being phased out upstream in favour of the Pangolin CLI, so this beta
+channel now runs the CLI instead of the standalone Newt binary.
+
+- **Your options keep working.** The option names are unchanged
+  (`PANGOLIN_ENDPOINT`, `NEWT_ID`, `NEWT_SECRET`). The add-on passes the same
+  values to the CLI as `SITE_ID`/`SITE_SECRET` and as `NEWT_ID`/`NEWT_SECRET`,
+  so you do not need to change anything. `NEWT_ID` is the site ID and
+  `NEWT_SECRET` is the site secret.
+- **`custom_env_vars` still work.** Newt settings such as `LOG_LEVEL`, `MTU`
+  or `ACCEPT_CLIENTS` are read by the embedded Newt as before.
+- **Version numbers changed.** The add-on version is no longer the Newt
+  version. The beta channel starts a new `2.x` line, and the pinned CLI
+  version is listed in the [changelog](CHANGELOG.md).
+- **Rolling back.** To go back to the standalone Newt binary, uninstall this
+  beta add-on and install the stable **Newt Add-on** from the same
+  repository. Enter the same `PANGOLIN_ENDPOINT`, `NEWT_ID` and `NEWT_SECRET`.
+  Only one of the two add-ons should run at a time for the same site.
 
 ## Installation
 
@@ -21,13 +43,15 @@ support AppArmor, use the stable **Newt Add-on** instead.
    same repository, so you only need to add it once.
 3. Find **Newt Add-on (Beta)** in the store list and click **Install**.
 
-## Getting your Newt ID and Secret
+## Getting your site ID and secret
 
-1. In your Pangolin dashboard, create a new **Site** and choose **Newt** as
-   the connection method.
-2. Pangolin generates a **Newt ID** and **Newt Secret** for that site, and
-   shows you the endpoint URL of your Pangolin server.
-3. Copy those three values into this add-on's configuration below.
+1. In your Pangolin dashboard, create a new **Site** and choose **Newt** (or
+   the Pangolin CLI) as the connection method.
+2. Pangolin generates an ID and a secret for that site (shown as **Newt ID**
+   and **Newt Secret**, or **Site ID** and **Site Secret**), and shows you the
+   endpoint URL of your Pangolin server.
+3. Copy those three values into this add-on's configuration below. The ID goes
+   into `NEWT_ID` and the secret into `NEWT_SECRET`.
 
 See the [Pangolin site setup docs](https://docs.pangolin.net/manage/sites/install-site)
 for the full walkthrough.
@@ -50,31 +74,31 @@ The URL of the Pangolin server this site connects to.
 
 ### Option: `NEWT_ID`
 
-The Newt ID generated for this site in Pangolin.
+The ID generated for this site in Pangolin (the site ID, passed to the CLI as `SITE_ID`).
 
 ### Option: `NEWT_SECRET`
 
-The Newt secret generated for this site in Pangolin.
+The secret generated for this site in Pangolin (the site secret, passed to the CLI as `SITE_SECRET`).
 
 ### Option: `custom_env_vars` (optional)
 
-Extra environment variables passed through to Newt, one `NAME=value` entry
+Extra environment variables passed through to the Pangolin CLI (its embedded Newt), one `NAME=value` entry
 per line. Use this for any of Newt's optional settings — see the
 [Newt environment variables](https://github.com/fosrl/newt?tab=readme-ov-file#environment-variables)
 reference for the full list.
 
 For safety, a few names are always rejected regardless of what you set here,
 since they would let a config entry override values the add-on already
-validated, or change how the add-on's own script and Newt are executed:
-`PATH`, `HOME`, `LD_*`, `HEALTH_FILE`, `PANGOLIN_ENDPOINT`, `NEWT_ID`, and
-`NEWT_SECRET`. A rejected entry is skipped with a warning in the add-on log;
+validated, or change how the add-on's own script and the Pangolin CLI are executed:
+`PATH`, `HOME`, `LD_*`, `HEALTH_FILE`, `PANGOLIN_ENDPOINT`, `NEWT_ID`,
+`NEWT_SECRET`, `SITE_ID`, and `SITE_SECRET`. A rejected entry is skipped with a warning in the add-on log;
 everything else you set here is applied.
 
 ## Health status
 
-The add-on reports **healthy** once Newt successfully establishes the tunnel
-to your Pangolin server, and **unhealthy** if that connection is lost — Newt
-owns this signal itself, so it reflects real tunnel connectivity, not just
+The add-on reports **healthy** once the Pangolin CLI successfully establishes the tunnel
+to your Pangolin server, and **unhealthy** if that connection is lost — the
+CLI owns this signal itself, so it reflects real tunnel connectivity, not just
 whether the process is running.
 
 Note this is separate from the per-resource "Target" health checks you may
@@ -131,6 +155,7 @@ See [CHANGELOG.md](CHANGELOG.md) in this add-on's folder.
 
 ## Useful links
 
+- [Pangolin CLI](https://github.com/fosrl/cli)
 - [Newt documentation](https://docs.fossorial.io/Newt/overview)
 - [Pangolin documentation](https://docs.pangolin.net/)
 - [Home Assistant](https://www.home-assistant.io/)

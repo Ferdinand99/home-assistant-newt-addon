@@ -1,4 +1,4 @@
-# Home Assistant Add-on AppArmor profile for Newt
+# Home Assistant Add-on AppArmor profile for the Pangolin CLI (embedded Newt)
 #
 # This profile is enabled by default in the beta channel (apparmor: true in config.yaml).
 # The stable channel keeps apparmor disabled for hosts without AppArmor support.
@@ -31,7 +31,7 @@ profile hassio-addons-newt flags=(attach_disconnected,mediate_deleted) {
   /bin/rm ix,
   /bin/busybox ix,
   /run.sh rix,
-  /usr/bin/newt ixr,
+  /usr/bin/pangolin-cli ixr,
 
   # Read add-on options and allow Newt to persist its own config under /data.
   /data/** rwk,

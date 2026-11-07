@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
-echo "🔹 Starting Newt inside Home Assistant OS..."
+echo "🔹 Starting Pangolin CLI (site) inside Home Assistant OS..."
 
 CONFIG_PATH="/data/options.json"
 export HEALTH_FILE="${HEALTH_FILE:-/tmp/healthy}"
@@ -34,6 +34,10 @@ echo "  HEALTH_FILE=$HEALTH_FILE"
 export PANGOLIN_ENDPOINT="$PANGOLIN_ENDPOINT"
 export NEWT_ID="$NEWT_ID"
 export NEWT_SECRET="$NEWT_SECRET"
+# The Pangolin CLI reads SITE_ID/SITE_SECRET; the embedded Newt still accepts the
+# NEWT_* names. Export both from the same add-on options (NEWT_ID/NEWT_SECRET).
+export SITE_ID="$NEWT_ID"
+export SITE_SECRET="$NEWT_SECRET"
 
 # Set persistent storage directories for HA Add-ons
 export HOME="/data"
@@ -45,9 +49,9 @@ NEWT_PID=""
 
 handle_shutdown() {
     STOP_REQUESTED=1
-    echo "🔹 Shutdown requested, stopping Newt..."
+    echo "🔹 Shutdown requested, stopping Pangolin CLI..."
 
-    # Kill Newt
+    # Kill the Pangolin CLI
     if [[ -n "$NEWT_PID" ]] && kill -0 "$NEWT_PID" 2>/dev/null; then
         kill -SIGTERM "$NEWT_PID" 2>/dev/null || true
         wait "$NEWT_PID" 2>/dev/null || true
@@ -66,11 +70,11 @@ if [[ -n "$CUSTOM_ENV_VARS" ]]; then
                 continue
             fi
             var_name="${env_var%%=*}"
-            # Protected variables: either they alter how this script and Newt are
+            # Protected variables: either they alter how this script and the Pangolin CLI are
             # executed (PATH/HOME/LD_*), or they would silently override values that
             # were already validated from the add-on configuration above.
             case "$var_name" in
-                PATH|HOME|LD_*|HEALTH_FILE|PANGOLIN_ENDPOINT|NEWT_ID|NEWT_SECRET)
+                PATH|HOME|LD_*|HEALTH_FILE|PANGOLIN_ENDPOINT|NEWT_ID|NEWT_SECRET|SITE_ID|SITE_SECRET)
                     echo "  ⚠️ Skipping protected variable: ${var_name}"
                     continue
                     ;;
@@ -89,14 +93,14 @@ while true; do
         exit 0
     fi
 
-    echo "🔹 Starting Newt..."
+    echo "🔹 Starting Pangolin CLI (site)..."
 
-    # Remove the health file before startup. Newt creates it itself once the tunnel
-    # is up, and removes it again if the connection is lost (see HEALTH_FILE in Newt).
+    # Remove the health file before startup. The embedded Newt creates it itself once
+    # the tunnel is up, and removes it again if the connection is lost (HEALTH_FILE).
     rm -f "$HEALTH_FILE"
 
-    # Start Newt in the background
-    /usr/bin/newt &
+    # Start the Pangolin CLI in the background
+    /usr/bin/pangolin-cli up site &
     NEWT_PID=$!
 
     set +e
@@ -105,14 +109,14 @@ while true; do
     set -e
     
     NEWT_PID=""
-    rm -f "$HEALTH_FILE" # Ensure the file is gone when Newt dies, so the container gets marked "unhealthy"
+    rm -f "$HEALTH_FILE" # Ensure the file is gone when the CLI dies, so the container gets marked "unhealthy"
 
     if [[ "$STOP_REQUESTED" -eq 1 ]]; then
-        echo "🔹 Newt stopped due to shutdown signal"
+        echo "🔹 Pangolin CLI stopped due to shutdown signal"
         exit 0
     fi
 
-    echo "⚠️ Newt stopped with exit code ${NEWT_EXIT_CODE}! Waiting 5 seconds before reconnecting..."
+    echo "⚠️ Pangolin CLI stopped with exit code ${NEWT_EXIT_CODE}! Waiting 5 seconds before reconnecting..."
     # Background sleep + wait, so a SIGTERM during the pause runs the trap immediately
     # instead of being stuck until sleep finishes.
     sleep 5 &
