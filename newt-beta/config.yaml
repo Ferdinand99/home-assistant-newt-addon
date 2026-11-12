@@ -1,5 +1,5 @@
 name: "Newt Add-on (Beta)"
-version: "2.0.0-beta1"
+version: "2.0.0-beta2"
 slug: "newt-beta"
 description: "Beta channel: runs the Pangolin CLI (embedded Newt) to connect Home Assistant to Pangolin"
 url: "https://github.com/Ferdinand99/home-assistant-newt-addon"
@@ -30,6 +30,9 @@ schema:
   NEWT_SECRET: "password"
   custom_env_vars:
     - "match(^[A-Z_][A-Z0-9_]*=[^\\n\\r\\0]+$)"
+# Own folder under /addon_configs/ (mounted at /config) for an optional blueprint.yaml.
+map:
+  - addon_config:rw
 hassio_api: false
 homeassistant_api: false
 auth_api: false
