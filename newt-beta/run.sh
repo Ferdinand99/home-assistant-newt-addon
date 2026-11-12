@@ -86,6 +86,19 @@ if [[ -n "$CUSTOM_ENV_VARS" ]]; then
     done <<< "$CUSTOM_ENV_VARS"
 fi
 
+# Optional Pangolin blueprint: if the user put a blueprint.yaml in the add-on's own
+# config folder (/addon_configs/<slug>/, mounted at /config), apply it on connect.
+# A BLUEPRINT_FILE set via custom_env_vars wins; without a file nothing changes.
+BLUEPRINT_DEFAULT="/config/blueprint.yaml"
+if [[ -n "${BLUEPRINT_FILE:-}" ]]; then
+    echo "✅ Using BLUEPRINT_FILE from custom_env_vars"
+elif [[ -f "$BLUEPRINT_DEFAULT" ]]; then
+    export BLUEPRINT_FILE="$BLUEPRINT_DEFAULT"
+    echo "✅ Blueprint found: applying $BLUEPRINT_FILE on connect"
+else
+    echo "ℹ️ No blueprint.yaml in the add-on config folder; skipping blueprint"
+fi
+
 # Auto-reconnect loop
 while true; do
     if [[ "$STOP_REQUESTED" -eq 1 ]]; then

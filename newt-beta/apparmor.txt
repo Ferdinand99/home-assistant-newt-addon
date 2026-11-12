@@ -35,6 +35,9 @@ profile hassio-addons-newt flags=(attach_disconnected,mediate_deleted) {
 
   # Read add-on options and allow Newt to persist its own config under /data.
   /data/** rwk,
+  # Optional blueprint.yaml in the add-on config folder (map: addon_config).
+  /config/ r,
+  /config/** r,
   /etc/ssl/** r,
   /etc/hosts r,
   /etc/resolv.conf r,

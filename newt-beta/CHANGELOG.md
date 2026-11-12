@@ -1,5 +1,11 @@
 # Changelog
 
+## 🔹 Version 2.0.0-beta2 - (12.11.2026)
+- Added an optional Pangolin blueprint: put a `blueprint.yaml` in the add-on's own config folder (`/addon_configs/<id>_newt-beta/`) and it is applied every time the add-on connects (issue #42)
+- The add-on now has its own config folder (`map: addon_config`); without a `blueprint.yaml` in it, nothing changes
+- A `BLUEPRINT_FILE` set via `custom_env_vars` still takes precedence
+- AppArmor profile now allows reading `/config`
+
 ## 🔹 Version 2.0.0-beta1 - (07.11.2026)
 - Switched from the standalone Newt binary to the official Pangolin CLI 0.21.0 (`pangolin-cli up site`), which embeds Newt (see issue #38)
 - Option names are unchanged (`NEWT_ID`, `NEWT_SECRET`): the add-on passes them to the CLI as both `SITE_ID`/`SITE_SECRET` and `NEWT_ID`/`NEWT_SECRET`

@@ -106,6 +106,50 @@ see in the add-on log (`Target NNN: health check failed: ...`) — those come
 from Pangolin checking your own backend services behind the tunnel, and
 don't affect the add-on's health status.
 
+## Pangolin blueprint (optional)
+
+Pangolin [blueprints](https://docs.pangolin.net/manage/blueprints) describe
+resources in YAML. With a blueprint, the add-on creates or updates them in
+Pangolin itself when it connects, so you don't have to add Home Assistant
+by hand in the Pangolin dashboard.
+
+1. The add-on has its own config folder, `/addon_configs/<id>_newt-beta/`
+   (the `<id>` part differs per installation). Open it with the File editor,
+   Samba or SSH add-on.
+2. Create a file named `blueprint.yaml` in that folder, for example:
+
+   ```yaml
+   public-resources:
+     home-assistant:
+       name: Home Assistant
+       mode: http
+       full-domain: ha.example.com
+       enabled: true
+       auth:
+         sso-enabled: false
+       targets:
+         - hostname: localhost
+           port: 8123
+           method: http
+           healthcheck:
+             hostname: localhost
+             port: 8123
+             path: /manifest.json
+   ```
+
+3. Restart the add-on. The log shows `Blueprint found: applying /config/blueprint.yaml on connect`.
+
+Notes:
+
+- The blueprint is applied again on every connect, so the file is the source
+  of truth: changes made to these resources in the Pangolin dashboard can be
+  overwritten.
+- Without a `blueprint.yaml` the add-on works exactly as before.
+- You can point to another file with `BLUEPRINT_FILE=/config/other.yaml` in
+  `custom_env_vars`; that setting takes precedence.
+- Remember to add Pangolin as a trusted proxy (see below) when exposing Home
+  Assistant over HTTP.
+
 ## Reverse proxy / `trusted_proxies` setup (optional)
 
 If you're exposing Home Assistant through Pangolin and seeing `403:
