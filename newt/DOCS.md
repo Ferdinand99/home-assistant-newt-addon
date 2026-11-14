@@ -3,17 +3,15 @@
 Runs [Newt](https://docs.fossorial.io/Newt/overview) from
 [Fossorial](https://fossorial.io/) inside Home Assistant, connecting this
 instance to your [Pangolin](https://docs.pangolin.net/) server over an
-outbound WireGuard tunnel. Newt is delivered either as the standalone binary
-or inside the official [Pangolin CLI](https://github.com/fosrl/cli)
-(`pangolin-cli up site`), which embeds Newt and accepts the same settings and
-environment variables. The [changelog](CHANGELOG.md) says which one this
-version runs.
+outbound WireGuard tunnel. Newt runs inside the official
+[Pangolin CLI](https://github.com/fosrl/cli) (`pangolin-cli up site`), which
+embeds Newt and accepts the same settings and environment variables.
 
 This is the **stable** channel. It receives updates after they've been
 confirmed stable on the **Newt Add-on (Beta)** channel for a 7 day
-observation period. When stable moves from the standalone Newt binary to the
-Pangolin CLI, your options stay the same and you do not need to change
-anything.
+observation period. Version 2.0.0 moved stable from the standalone Newt
+binary to the Pangolin CLI; your options stayed the same, so you do not need
+to change anything.
 
 ## Installation
 
