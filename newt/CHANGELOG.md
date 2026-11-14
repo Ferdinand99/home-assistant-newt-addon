@@ -1,5 +1,12 @@
 # Changelog
 
+## 🔹 Version 2.0.0-stable1 - (14.11.2026)
+- Switched from the standalone Newt binary to the official Pangolin CLI 0.21.0 (pangolin-cli up site), which embeds Newt. It has been running on the beta channel for at least 7 days (since 07.11.2026)
+- No configuration change is needed: the options (PANGOLIN_ENDPOINT, NEWT_ID, NEWT_SECRET) and custom_env_vars work as before. The add-on passes the credentials to the CLI as SITE_ID/SITE_SECRET and as NEWT_ID/NEWT_SECRET
+- SITE_ID and SITE_SECRET are now protected and cannot be overridden via custom_env_vars
+- The add-on version starts a new 2.x line, because the CLI's own version (0.x) is lower than Newt's 1.x and Home Assistant would not offer the update. The pinned CLI version is in the Dockerfile and in this changelog
+- Stable still has AppArmor disabled and shows NEWT_SECRET as a plain text field
+
 ## 🔹 Version 1.19.0-stable1 - (25.10.2026)
 - Bumped newt to v.1.19.0 after stable beta
 
