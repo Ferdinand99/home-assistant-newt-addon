@@ -52,7 +52,7 @@ custom_env_vars:
 
 ## 📌 About this Add-on
 
-This add-on runs **[Newt](https://github.com/fosrl/newt)**, the tunnel client for **[Pangolin](https://docs.fossorial.io/Newt/overview)** by Fossorial, directly on your Home Assistant host. The beta add-on runs Newt through the official **[Pangolin CLI](https://github.com/fosrl/cli)** (`pangolin up site`), which replaces the standalone Newt binary upstream.
+This add-on runs **[Newt](https://github.com/fosrl/newt)**, the tunnel client for **[Pangolin](https://docs.fossorial.io/Newt/overview)** by Fossorial, directly on your Home Assistant host. Both add-ons run Newt through the official **[Pangolin CLI](https://github.com/fosrl/cli)** (`pangolin-cli up site`), which replaces the standalone Newt binary upstream.
 
 Newt opens an **outbound** tunnel from your home network to your Pangolin server. Pangolin can then publish Home Assistant and other services on your network under your own domain, **without port forwarding** on your router and without exposing your home IP address.
 
@@ -71,7 +71,7 @@ flowchart LR
 ```
 
 1. When the add-on starts, `run.sh` reads your settings from the add-on configuration and exits with an error if `PANGOLIN_ENDPOINT`, `NEWT_ID` or `NEWT_SECRET` is missing.
-2. It exports your settings as environment variables and starts the Newt binary.
+2. It exports your settings as environment variables and starts the Pangolin CLI, which runs Newt.
 3. Newt connects to your Pangolin server and keeps the tunnel open. Pangolin forwards requests for your resources through the tunnel, and Newt delivers them to the targets you've set up in Pangolin.
 4. If Newt exits for any reason, the add-on waits 5 seconds and starts it again. Stopping the add-on shuts Newt down cleanly.
 
@@ -84,10 +84,10 @@ The add-on uses **host networking** (`host_network: true`), so Newt sees the sam
 - ✅ Easy installation from the Home Assistant app store, with one repository for both the stable and the beta channel
 - ✅ Configure everything from the Home Assistant UI
 - ✅ Pass any of [Newt's optional environment variables](https://github.com/fosrl/newt?tab=readme-ov-file#environment-variables) through `custom_env_vars`
-- ✅ Supports `amd64`, `aarch64`, `armv7` and `armhf` (armhf uses Newt's ARMv6 build)
+- ✅ Supports `amd64`, `aarch64`, `armv7` and `armhf` (armhf uses the ARMv6 build)
 - ✅ Automatic reconnect: Newt restarts 5 seconds after it exits
 - ✅ Real health reporting: the add-on is **healthy** only while the tunnel to Pangolin is actually up
-- ✅ Verified downloads: the Pangolin CLI or Newt binary is fetched from the official [fosrl/cli](https://github.com/fosrl/cli/releases) or [fosrl/newt](https://github.com/fosrl/newt/releases) releases and checked against a pinned SHA256 checksum. The build fails if the checksum doesn't match.
+- ✅ Verified downloads: the Pangolin CLI is fetched from the official [fosrl/cli](https://github.com/fosrl/cli/releases) releases and checked against a pinned SHA256 checksum. The build fails if the checksum doesn't match.
 - ✅ Credentials and custom variable values are shown as `[REDACTED]` in the logs
 - ✅ Starts automatically when Home Assistant boots
 - ✅ Beta channel with a hardened AppArmor profile enabled by default
@@ -101,7 +101,7 @@ This repository contains two separate add-ons. Add the repository once, and both
 | | **Newt Add-on** (stable) | **Newt Add-on (Beta)** |
 |---|---|---|
 | Folder | [`newt/`](newt/) | [`newt-beta/`](newt-beta/) |
-| Runs | Standalone Newt binary for now; moves to the Pangolin CLI by the promotion workflow (see below) | [Pangolin CLI](https://github.com/fosrl/cli) (`pangolin-cli up site`, Newt built in) |
+| Runs | [Pangolin CLI](https://github.com/fosrl/cli) (`pangolin-cli up site`, Newt built in) | [Pangolin CLI](https://github.com/fosrl/cli) (`pangolin-cli up site`, Newt built in) |
 | New releases | Pangolin CLI, after at least 7 days on beta | Pangolin CLI, same day or shortly after upstream release |
 | AppArmor | Disabled | **Enabled** with a [hardened profile](newt-beta/apparmor.txt) |
 | `NEWT_SECRET` in the UI | Plain text field | Masked password field |
@@ -119,7 +119,7 @@ This repository contains two separate add-ons. Add the repository once, and both
 The update flow is automated with GitHub Actions:
 
 1. **Beta:** a workflow checks for new [fosrl/cli](https://github.com/fosrl/cli/releases) (Pangolin CLI) releases twice a day. When it finds one, it opens a pull request that bumps the CLI version and the pinned SHA256 checksums in `newt-beta/`.
-2. **Stable:** once the CLI version pinned in `newt-beta/` has been on `main` for **7 days**, a second workflow opens a pull request for stable. The first time, that pull request moves stable from the standalone Newt binary to the Pangolin CLI (same Dockerfile and `run.sh` as beta; your options stay the same). After that, it copies the new CLI version and checksums from beta into `newt/`. The stable add-on keeps its own settings, such as AppArmor disabled and the plain `NEWT_SECRET` field.
+2. **Stable:** once the CLI version pinned in `newt-beta/` has been on `main` for **7 days**, a second workflow opens a pull request for stable that copies the new CLI version and checksums from beta into `newt/`. The stable add-on keeps its own settings, such as AppArmor disabled and the plain `NEWT_SECRET` field.
 3. Changes beyond the CLI version, such as hardening and new features, are tested on beta first and promoted to stable by hand.
 
 See the changelogs for what changed in each release: [stable](newt/CHANGELOG.md) · [beta](newt-beta/CHANGELOG.md).
@@ -280,7 +280,7 @@ Newt manages this signal itself. It writes a health file (`/tmp/healthy`) when i
 
 - **No Home Assistant API access:** the add-on doesn't request access to the Supervisor, Home Assistant or auth APIs.
 - **Limited privileges:** the add-on only requests the `NET_ADMIN` and `NET_RAW` capabilities that Newt needs for networking.
-- **Verified binary:** the Newt binary is pinned to an exact version and checked against a SHA256 checksum at build time.
+- **Verified binary:** the Pangolin CLI is pinned to an exact version and checked against a SHA256 checksum at build time.
 - **No secrets in logs:** the endpoint, ID, secret and all custom variable values are shown as `[REDACTED]`.
 - **Protected variables:** `custom_env_vars` can't override `PATH`, `HOME`, `LD_*`, the health file or your credentials.
 - **AppArmor (beta):** the beta channel ships an [AppArmor profile](newt-beta/apparmor.txt) that denies mounts, kernel module loading, ptrace, `SYS_ADMIN`, and writes to `/proc` and `/sys`.
@@ -323,7 +323,7 @@ Still stuck? Ask on [Discord](https://discord.gg/fTHY3ZM8nY) or open a [GitHub i
 ├── repository.json        # Add-on repository manifest
 ├── newt/                  # Stable add-on
 │   ├── config.yaml        # Add-on manifest (options, schema, permissions)
-│   ├── Dockerfile         # Downloads and verifies the Newt binary
+│   ├── Dockerfile         # Downloads and verifies the Pangolin CLI
 │   ├── run.sh             # Entrypoint: reads config, starts Newt, reconnects
 │   ├── DOCS.md            # Shown in the add-on's Documentation tab
 │   └── CHANGELOG.md

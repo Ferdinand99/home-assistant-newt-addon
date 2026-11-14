@@ -3,17 +3,15 @@
 Runs [Newt](https://docs.fossorial.io/Newt/overview) from
 [Fossorial](https://fossorial.io/) inside Home Assistant, connecting this
 instance to your [Pangolin](https://docs.pangolin.net/) server over an
-outbound WireGuard tunnel. Newt is delivered either as the standalone binary
-or inside the official [Pangolin CLI](https://github.com/fosrl/cli)
-(`pangolin-cli up site`), which embeds Newt and accepts the same settings and
-environment variables. The [changelog](CHANGELOG.md) says which one this
-version runs.
+outbound WireGuard tunnel. Newt runs inside the official
+[Pangolin CLI](https://github.com/fosrl/cli) (`pangolin-cli up site`), which
+embeds Newt and accepts the same settings and environment variables.
 
 This is the **stable** channel. It receives updates after they've been
 confirmed stable on the **Newt Add-on (Beta)** channel for a 7 day
-observation period. When stable moves from the standalone Newt binary to the
-Pangolin CLI, your options stay the same and you do not need to change
-anything.
+observation period. Version 2.0.0 moved stable from the standalone Newt
+binary to the Pangolin CLI; your options stayed the same, so you do not need
+to change anything.
 
 ## Installation
 
@@ -67,6 +65,50 @@ Extra environment variables passed through to Newt, one `NAME=value` entry
 per line. Use this for any of Newt's optional settings — see the
 [Newt environment variables](https://github.com/fosrl/newt?tab=readme-ov-file#environment-variables)
 reference for the full list.
+
+## Pangolin blueprint (optional)
+
+Pangolin [blueprints](https://docs.pangolin.net/manage/blueprints) describe
+resources in YAML. With a blueprint, the add-on creates or updates them in
+Pangolin itself when it connects, so you don't have to add Home Assistant
+by hand in the Pangolin dashboard.
+
+1. The add-on has its own config folder, `/addon_configs/<id>_newt/`
+   (the `<id>` part differs per installation). Open it with the File editor,
+   Samba or SSH add-on.
+2. Create a file named `blueprint.yaml` in that folder, for example:
+
+   ```yaml
+   public-resources:
+     home-assistant:
+       name: Home Assistant
+       mode: http
+       full-domain: ha.example.com
+       enabled: true
+       auth:
+         sso-enabled: false
+       targets:
+         - hostname: localhost
+           port: 8123
+           method: http
+           healthcheck:
+             hostname: localhost
+             port: 8123
+             path: /manifest.json
+   ```
+
+3. Restart the add-on. The log shows `Blueprint found: applying /config/blueprint.yaml on connect`.
+
+Notes:
+
+- The blueprint is applied again on every connect, so the file is the source
+  of truth: changes made to these resources in the Pangolin dashboard can be
+  overwritten.
+- Without a `blueprint.yaml` the add-on works exactly as before.
+- You can point to another file with `BLUEPRINT_FILE=/config/other.yaml` in
+  `custom_env_vars`; that setting takes precedence.
+- Remember to add Pangolin as a trusted proxy (see below) when exposing Home
+  Assistant over HTTP.
 
 ## Reverse proxy / `trusted_proxies` setup (optional)
 
