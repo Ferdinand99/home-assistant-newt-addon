@@ -6,6 +6,7 @@
 - SITE_ID and SITE_SECRET are now protected and cannot be overridden via custom_env_vars
 - The add-on version starts a new 2.x line, because the CLI's own version (0.x) is lower than Newt's 1.x and Home Assistant would not offer the update. The pinned CLI version is in the Dockerfile and in this changelog
 - Stable still has AppArmor disabled and shows NEWT_SECRET as a plain text field
+- Added an optional Pangolin blueprint: put a `blueprint.yaml` in the add-on's own config folder (`/addon_configs/<id>_newt/`) and it is applied every time the add-on connects (issue #42). The add-on now has its own config folder (`map: addon_config`); without a `blueprint.yaml` in it, nothing changes. A `BLUEPRINT_FILE` set via `custom_env_vars` still takes precedence
 
 ## 🔹 Version 1.19.0-stable1 - (25.10.2026)
 - Bumped newt to v.1.19.0 after stable beta

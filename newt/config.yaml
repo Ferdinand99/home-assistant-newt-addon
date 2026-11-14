@@ -27,6 +27,8 @@ schema:
   NEWT_SECRET: "str"
   custom_env_vars:
     - "match(^[A-Z_][A-Z0-9_]*=.+$)"
+map:
+  - addon_config:rw
 hassio_api: false
 homeassistant_api: false
 auth_api: false
