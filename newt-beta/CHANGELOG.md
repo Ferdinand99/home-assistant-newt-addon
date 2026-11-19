@@ -1,5 +1,8 @@
 # Changelog
 
+## 🔹 Version 2.0.0-beta3 - (19.11.2026)
+- Bumped Pangolin CLI to 0.22.0
+
 ## 🔹 Version 2.0.0-beta2 - (12.11.2026)
 - Added an optional Pangolin blueprint: put a `blueprint.yaml` in the add-on's own config folder (`/addon_configs/<id>_newt-beta/`) and it is applied every time the add-on connects (issue #42)
 - The add-on now has its own config folder (`map: addon_config`); without a `blueprint.yaml` in it, nothing changes
