@@ -1,5 +1,8 @@
 # Changelog
 
+## 🔹 Version 2.0.0-beta4 - (20.11.2026)
+- Bumped Pangolin CLI to 0.23.0
+
 ## 🔹 Version 2.0.0-beta3 - (19.11.2026)
 - Bumped Pangolin CLI to 0.22.0
 
