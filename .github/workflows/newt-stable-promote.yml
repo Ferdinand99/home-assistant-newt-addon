@@ -15,8 +15,9 @@ name: Promote Pangolin CLI (stable)
 #
 #   routine  Stable already runs the CLI. The PR copies PANGOLIN_CLI_VERSION and the
 #            four PANGOLIN_CLI_SHA256_* ARGs from the beta Dockerfile (they were
-#            already verified when the beta bump PR was reviewed), bumps the stable
-#            version counter and adds a CHANGELOG entry.
+#            already verified when the beta bump PR was reviewed), sets the stable
+#            version (<beta base version>-stable1, or the stable counter + 1 when
+#            stable already has that base) and adds a CHANGELOG entry.
 #
 # Observation start: the commit date of the last commit on main's first-parent line
 # that touched the `ARG PANGOLIN_CLI_VERSION=` line in newt-beta/Dockerfile. That is
@@ -212,13 +213,30 @@ jobs:
             exit 1
           fi
 
-          # Same scheme as beta: increment the counter (2.0.0-stable1 -> 2.0.0-stable2).
+          # Same scheme as beta: a new CLI version means a new base version. The stable
+          # version takes the beta's base (2.1.0-beta1 -> 2.1.0-stable1). If stable already
+          # has that base (a manual add-on change on the same CLI version), only the stable
+          # counter goes up (2.1.0-stable1 -> 2.1.0-stable2).
           OLD_VERSION=$(grep -oP '^version: "\K[^"]+' newt/config.yaml)
-          if [[ ! "${OLD_VERSION}" =~ ^(.+-stable)([0-9]+)$ ]]; then
+          BETA_CONFIG_VERSION=$(grep -oP '^version: "\K[^"]+' newt-beta/config.yaml)
+          if [[ ! "${BETA_CONFIG_VERSION}" =~ ^([0-9]+\.[0-9]+\.[0-9]+)-beta[0-9]+$ ]]; then
+            echo "::error::Cannot parse beta version '${BETA_CONFIG_VERSION}' in newt-beta/config.yaml"
+            exit 1
+          fi
+          BETA_BASE="${BASH_REMATCH[1]}"
+          if [[ ! "${OLD_VERSION}" =~ ^([0-9]+\.[0-9]+\.[0-9]+)-stable([0-9]+)$ ]]; then
             echo "::error::Cannot parse stable version '${OLD_VERSION}' in newt/config.yaml"
             exit 1
           fi
-          NEW_VERSION="${BASH_REMATCH[1]}$(( BASH_REMATCH[2] + 1 ))"
+          if [ "${BASH_REMATCH[1]}" = "${BETA_BASE}" ]; then
+            NEW_VERSION="${BETA_BASE}-stable$(( BASH_REMATCH[2] + 1 ))"
+          else
+            NEW_VERSION="${BETA_BASE}-stable1"
+          fi
+          if [ "$(printf '%s\n%s\n' "$OLD_VERSION" "$NEW_VERSION" | sort -V | tail -n 1)" != "$NEW_VERSION" ] || [ "$OLD_VERSION" = "$NEW_VERSION" ]; then
+            echo "::error::New stable version ${NEW_VERSION} is not higher than ${OLD_VERSION}; Home Assistant would not offer the update."
+            exit 1
+          fi
           sed -i "s/^version: \".*\"/version: \"${NEW_VERSION}\"/" newt/config.yaml
 
           DATE=$(date +"%d.%m.%Y")

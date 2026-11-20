@@ -26,7 +26,10 @@ channel now runs the CLI instead of the standalone Newt binary.
   or `ACCEPT_CLIENTS` are read by the embedded Newt as before.
 - **Version numbers changed.** The add-on version is no longer the Newt
   version. The beta channel starts a new `2.x` line, and the pinned CLI
-  version is listed in the [changelog](CHANGELOG.md).
+  version is listed in the [changelog](CHANGELOG.md). Every CLI update bumps
+  the minor version (for example `2.0.0-beta4` to `2.1.0-beta1`); the
+  `-betaN` counter only goes up for manual add-on changes on the same CLI
+  version.
 - **Rolling back.** To go back to the standalone Newt binary, uninstall this
   beta add-on and install the stable **Newt Add-on** from the same
   repository. Enter the same `PANGOLIN_ENDPOINT`, `NEWT_ID` and `NEWT_SECRET`.

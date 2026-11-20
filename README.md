@@ -122,6 +122,8 @@ The update flow is automated with GitHub Actions:
 2. **Stable:** once the CLI version pinned in `newt-beta/` has been on `main` for **7 days**, a second workflow opens a pull request for stable that copies the new CLI version and checksums from beta into `newt/`. The stable add-on keeps its own settings, such as AppArmor disabled and the plain `NEWT_SECRET` field.
 3. Changes beyond the CLI version, such as hardening and new features, are tested on beta first and promoted to stable by hand.
 
+**Add-on versions:** every Pangolin CLI update bumps the minor version of the add-on and resets the suffix, for example `2.0.0-beta4` becomes `2.1.0-beta1` on beta and the promoted stable release is `2.1.0-stable1`. The `-betaN` / `-stableN` counter only goes up for manual add-on changes on the same CLI version.
+
 See the changelogs for what changed in each release: [stable](newt/CHANGELOG.md) · [beta](newt-beta/CHANGELOG.md).
 
 ---

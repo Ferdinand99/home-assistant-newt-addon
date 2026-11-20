@@ -83,13 +83,19 @@ jobs:
         run: |
           # The add-on version is independent of the CLI version (the CLI's 0.x
           # numbers are lower than the old Newt-based 1.x ones, so Home Assistant
-          # would not offer the update). Increment the beta counter instead.
+          # would not offer the update). Every CLI update bumps the minor version
+          # and resets the beta counter (2.0.0-beta4 -> 2.1.0-beta1). The counter
+          # is only incremented by hand for add-on changes on the same CLI version.
           CURRENT_CONFIG_VERSION=$(grep -oP '^version: "\K[^"]+' newt-beta/config.yaml)
-          if [[ ! "${CURRENT_CONFIG_VERSION}" =~ ^(.+-beta)([0-9]+)$ ]]; then
+          if [[ ! "${CURRENT_CONFIG_VERSION}" =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)-beta([0-9]+)$ ]]; then
             echo "::error::Cannot parse beta version '${CURRENT_CONFIG_VERSION}' in newt-beta/config.yaml"
             exit 1
           fi
-          NEW_CONFIG_VERSION="${BASH_REMATCH[1]}$(( BASH_REMATCH[2] + 1 ))"
+          NEW_CONFIG_VERSION="${BASH_REMATCH[1]}.$(( BASH_REMATCH[2] + 1 )).0-beta1"
+          if [ "$(printf '%s\n%s\n' "${CURRENT_CONFIG_VERSION}" "${NEW_CONFIG_VERSION}" | sort -V | tail -n 1)" != "${NEW_CONFIG_VERSION}" ]; then
+            echo "::error::New beta version ${NEW_CONFIG_VERSION} is not higher than ${CURRENT_CONFIG_VERSION}; Home Assistant would not offer the update."
+            exit 1
+          fi
           sed -i "s/^version: \".*\"/version: \"${NEW_CONFIG_VERSION}\"/" newt-beta/config.yaml
           echo "version=${NEW_CONFIG_VERSION}" >> "$GITHUB_OUTPUT"
 
