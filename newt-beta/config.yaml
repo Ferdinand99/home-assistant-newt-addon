@@ -1,5 +1,5 @@
 name: "Newt Add-on (Beta)"
-version: "2.0.0-beta3"
+version: "2.1.0-beta1"
 slug: "newt-beta"
 description: "Beta channel: runs the Pangolin CLI (embedded Newt) to connect Home Assistant to Pangolin"
 url: "https://github.com/Ferdinand99/home-assistant-newt-addon"
