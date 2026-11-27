@@ -1,5 +1,8 @@
 # Changelog
 
+## 🔹 Version 2.1.0-stable1 - (27.11.2026)
+- Bumped Pangolin CLI to 0.23.0 after the beta observation (since 20.11.2026)
+
 ## 🔹 Version 2.0.0-stable1 - (14.11.2026)
 - Switched from the standalone Newt binary to the official Pangolin CLI 0.21.0 (pangolin-cli up site), which embeds Newt. It has been running on the beta channel for at least 7 days (since 07.11.2026)
 - No configuration change is needed: the options (PANGOLIN_ENDPOINT, NEWT_ID, NEWT_SECRET) and custom_env_vars work as before. The add-on passes the credentials to the CLI as SITE_ID/SITE_SECRET and as NEWT_ID/NEWT_SECRET

@@ -3,17 +3,17 @@ FROM ghcr.io/hassio-addons/base:14.0.0
 
 # Define the Pangolin CLI version (fosrl/cli). The CLI embeds Newt: `pangolin-cli up site`
 # accepts the same flags and environment variables as the standalone newt binary.
-ARG PANGOLIN_CLI_VERSION=0.21.0
+ARG PANGOLIN_CLI_VERSION=0.23.0
 ENV PANGOLIN_CLI_VERSION=${PANGOLIN_CLI_VERSION}
 # SHA256 checksums for PANGOLIN_CLI_VERSION above. Must be updated together with PANGOLIN_CLI_VERSION.
 # Fetch them with:
 #   for a in amd64 arm64 arm32 arm32v6; do printf '%s ' "$a"; \
 #     curl -sL "https://github.com/fosrl/cli/releases/download/${PANGOLIN_CLI_VERSION}/pangolin-cli_linux_$a" \
 #     | sha256sum | cut -d' ' -f1; done
-ARG PANGOLIN_CLI_SHA256_AMD64="c34937dc21f6e447e1023b5e5f36fb2266c997c3866e979a7cead23b4a3736c6"
-ARG PANGOLIN_CLI_SHA256_ARM64="4dc81fd11076593452d39c2ce77ad9ba4767115557a012da03aed7450bf23039"
-ARG PANGOLIN_CLI_SHA256_ARM32="ca7c53fa6a08921458d9841a5e9d35bf628a7116a607204a8e4820e1b5b5239a"
-ARG PANGOLIN_CLI_SHA256_ARM32V6="95fee067073f0938e8c4fc7ec45b81361379fb047a0ba37d28c767375f8eb54d"
+ARG PANGOLIN_CLI_SHA256_AMD64="f947176b6c8721928a45ccfb0152bacd3b4b75c6f212da0292efb7799947d87c"
+ARG PANGOLIN_CLI_SHA256_ARM64="bb5930cad86bd840bec67597194b83c717c7e9c11dfe851ab16ab65adde64711"
+ARG PANGOLIN_CLI_SHA256_ARM32="9b4349d983d8145fc73b59067fa79c810c7c67643b8946a9bbd9230a329555ab"
+ARG PANGOLIN_CLI_SHA256_ARM32V6="16431726a32bb2ab600316a3b69be2f9dfa2d5d43d0285e3d1942255a285978e"
 
 # Enable the health file (written by the embedded Newt once the tunnel is up)
 ENV HEALTH_FILE=/tmp/healthy
