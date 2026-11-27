@@ -1,5 +1,5 @@
 name: "Newt Add-on"
-version: "2.0.0-stable1"
+version: "2.1.0-stable1"
 slug: "newt"
 description: "Runs the Pangolin CLI (embedded Newt) to connect Home Assistant to Pangolin"
 url: "https://github.com/Ferdinand99/home-assistant-newt-addon"
